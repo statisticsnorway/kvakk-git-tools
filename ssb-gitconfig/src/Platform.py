@@ -11,12 +11,15 @@ def ping(host: str) -> bool:
     ping_param = "-n" if platform.system() == "Windows" else "-c"
 
     # Timeout is -w <milliseconds> on Windows, and -W <seconds> on Linux
-    timeout_param = "-w" if platform.system() == "Windows" else "-W 1"
+    timeout_param = "-w" if platform.system() == "Windows" else "-W"
     timeout_value = "1000" if platform.system() == "Windows" else "1"
 
     # Building the command. Ex: "ping -c 1 google.com"
     command = ["ping", ping_param, "1", timeout_param, timeout_value, host]
-    return subprocess.run(command, capture_output=True).returncode == 0
+
+    # Fix for python < 3.7, using stdout.
+    # Use capture_output=true instead of stdout when python >= 3.7
+    return subprocess.run(command, stdout=subprocess.PIPE).returncode == 0
 
 
 class Platform:
@@ -34,13 +37,17 @@ class Platform:
         self.adm_zone = True if ping("ssb.no") else False
 
         session_name = os.environ.get("SESSIONNAME")
-        self.citrix = True if "ICA" in session_name else False
+        self.citrix = (
+            True if session_name is not None and "ICA" in session_name else False
+        )
 
     def __repr__(self):
-        return f"{self.__class__.__qualname__}(linux={self.linux}, " \
-               f"windows={self.windows}, dapla={self.dapla}, " \
-               f"adm_zone={self.adm_zone}, prod_zone={self.prod_zone}, " \
-               f"citrix={self.citrix})"
+        return (
+            f"{self.__class__.__qualname__}(linux={self.linux}, "
+            f"windows={self.windows}, dapla={self.dapla}, "
+            f"adm_zone={self.adm_zone}, prod_zone={self.prod_zone}, "
+            f"citrix={self.citrix})"
+        )
 
 
 def main():
