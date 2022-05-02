@@ -13,9 +13,9 @@ environments. But the aim is to make a common script, setting the recommended
 git config for all environments.
 
 ## Directories
-There is one directory for each environment. In addtion there is one directory
-for the recommended `.gitattributes` file and one directory for the recommended
-`.gitignore`-file.
+The `existing` directory contains configurations collected from existing environments
+before any recommendations are implemented. The `recommended` directory contains the
+recommended config files for the different environments.
 
 ## Why not public repo
 This repo is not public because it will contain Ansible scripts with
