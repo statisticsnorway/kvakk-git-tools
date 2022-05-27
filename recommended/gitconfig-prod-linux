@@ -16,6 +16,7 @@
         prune = true
 [filter "nbstripout"]
         clean = '/usr/bin/python3' -m nbstripout
+        extrakeys = cell.metadata.pycharm metadata.kernelspec
         smudge = cat
 [merge]
         tool = meld
