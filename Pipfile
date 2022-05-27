@@ -9,6 +9,3 @@ wheel = "*"
 [dev-packages]
 black = {extras = ["jupyter"], version = "*"}
 isort = "*"
-
-[requires]
-python_version = "3.9"

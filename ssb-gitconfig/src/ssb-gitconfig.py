@@ -1,3 +1,4 @@
+import getpass
 import os
 import platform
 import subprocess
@@ -55,7 +56,7 @@ def main():
     pl = Platform()
     print(pl)
 
-    username = os.getlogin()
+    username = getpass.getuser()
     print(f"Username = {username}")
 
 
