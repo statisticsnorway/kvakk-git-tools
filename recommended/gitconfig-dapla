@@ -12,4 +12,5 @@
         prune = true
 [filter "nbstripout"]
         clean = '/opt/conda/bin/python3' -m nbstripout
+        extrakeys = cell.metadata.pycharm metadata.kernelspec
         smudge = cat
