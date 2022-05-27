@@ -13,3 +13,8 @@ git config, based on the detected environment.
 The `existing` directory contains configurations collected from existing environments
 before any recommendations are implemented. The `recommended` directory contains the
 recommended config files for the different environments.
+
+The `ssb-gitconfig` directory is the root directory for the script that should
+set the ssb recommended git config based on the detected environment. It is a
+work in progress and not finished yet.
+
