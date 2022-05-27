@@ -55,6 +55,9 @@ def main():
     pl = Platform()
     print(pl)
 
+    username = os.getlogin()
+    print(f"Username = {username}")
+
 
 if __name__ == "__main__":
     main()
