@@ -33,8 +33,9 @@ class Platform:
 
         self.prod_zone = True if ping("jupyter-prod.ssb.no") else False
 
-        # How to check for adm zone? Which server? Or which environment variable?
-        self.adm_zone = True if ping("ssb.no") else False
+        self.adm_zone = False
+        if not self.prod_zone and not self.dapla:
+            self.adm_zone = True if ping("aw-dc04.ssb.no") else False
 
         session_name = os.environ.get("SESSIONNAME")
         self.citrix = (
