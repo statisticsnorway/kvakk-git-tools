@@ -1,0 +1,15 @@
+[color]
+        ui = auto
+[core]
+        autocrlf = false
+        editor = nano
+        eol = lf
+[credential]
+        helper = cache --timeout=86400
+[diff "ipynb"]
+        textconv = '/opt/conda/bin/python3' -m nbstripout -t
+[fetch]
+        prune = true
+[filter "nbstripout"]
+        clean = '/opt/conda/bin/python3' -m nbstripout
+        smudge = cat
