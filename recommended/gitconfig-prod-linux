@@ -1,0 +1,28 @@
+[color]
+        ui = auto
+[core]
+        autocrlf = false
+        editor = nano
+        eol = lf
+[credential]
+        helper = cache --timeout=86400
+[diff]
+        tool = meld
+[diff "ipynb"]
+        textconv = '/usr/bin/python3' -m nbstripout -t
+[difftool]
+        prompt = false
+[fetch]
+        prune = true
+[filter "nbstripout"]
+        clean = '/usr/bin/python3' -m nbstripout
+        extrakeys = cell.metadata.pycharm metadata.kernelspec
+        required = true
+        smudge = cat
+[merge]
+        tool = meld
+[mergetool]
+        keepBackup = false
+        prompt = false
+[push]
+        default = simple
