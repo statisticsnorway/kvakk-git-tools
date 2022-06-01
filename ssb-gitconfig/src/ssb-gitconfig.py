@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import getpass
 import os
 import platform
 import subprocess
+from datetime import datetime
+from pathlib import Path
 
 
 def ping(host: str) -> bool:
@@ -23,6 +24,20 @@ def ping(host: str) -> bool:
     # Fix for python < 3.7, using stdout.
     # Use capture_output=true instead of stdout when python >= 3.7
     return subprocess.run(command, stdout=subprocess.PIPE).returncode == 0
+
+
+def backup_gitconfig():
+    gitconfig_file = Path.home() / ".gitconfig"
+    print(gitconfig_file)
+
+    if gitconfig_file.is_file():
+        timestamp_str = datetime.now().strftime("%y%m%d_%H%M%S")
+        destination_filename = f".gitconfig_{timestamp_str}"
+        print(f"Backup .gitconfig to {destination_filename}")
+
+        backup_file = Path.home() / destination_filename
+        backup_file.write_text(gitconfig_file.read_text())
+        print(f"Backup created: {backup_file}")
 
 
 class Platform:
@@ -58,8 +73,7 @@ def main():
     pl = Platform()
     print(pl)
 
-    username = getpass.getuser()
-    print(f"Username = {username}")
+    backup_gitconfig()
 
 
 if __name__ == "__main__":
