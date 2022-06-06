@@ -129,7 +129,11 @@ def set_base_config(pl: Platform) -> None:
     root_dir = Path.home() / "temp"
 
     with TempDir(root_dir):
-        cmd = ["git", "clone", "https://github.com/statisticsnorway/kvakk-git-tools.git"]
+        cmd = [
+            "git",
+            "clone",
+            "https://github.com/statisticsnorway/kvakk-git-tools.git",
+        ]
 
         # Fix for python < 3.7, using stdout.
         # Use capture_output=true instead of stdout when python >= 3.7
@@ -137,7 +141,12 @@ def set_base_config(pl: Platform) -> None:
 
         dst = Path().home() / ".gitconfig_new"
         if pl.windows and pl.adm_zone:
-            src = root_dir / "kvakk-git-tools" / "recommended" / "gitconfig-prod-windows-citrix"
+            src = (
+                root_dir
+                / "kvakk-git-tools"
+                / "recommended"
+                / "gitconfig-prod-windows-citrix"
+            )
             dst.write_bytes(src.read_bytes())
 
 
