@@ -102,7 +102,7 @@ def replace_text_in_file(old_text: str, new_text: str, file: Path) -> None:
         outfile.write(filedata)
 
 
-def extract_username_email(file: Path) -> Tuple[str, str]:
+def extract_name_email(file: Path) -> Tuple[str, str]:
     name = email = None
     content = file.read_text().splitlines()
     for line in content:
@@ -122,14 +122,13 @@ def backup_gitconfig(gitconfig_file: Path) -> bool:
         print(f"Backup .gitconfig to {destination_filename}")
 
         backup_file = Path.home() / destination_filename
-        # backup_file.write_bytes(gitconfig_file.read_bytes())
-        print(f"Backup created: {backup_file}")
+        backup_file.write_bytes(gitconfig_file.read_bytes())
         return True
     else:
         return False
 
 
-def request_username_email() -> Tuple[str, str]:
+def request_name_email() -> Tuple[str, str]:
     print("Git needs to know your name (first name and surname) and email address.")
     name = input("Enter name: ")
     email = input("Enter email: ")
@@ -150,13 +149,13 @@ def set_base_config(pl: Platform) -> None:
         subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.PIPE)
 
         config_dir = temp_dir / "kvakk-git-tools" / "recommended"
-        dst = Path().home() / ".gitconfig_new"
+        dst = Path().home() / ".gitconfig"
 
-        if pl.adm_zone and pl.windows:
-            src = config_dir / "gitconfig-prod-windows-citrix"
-        elif pl.prod_zone and pl.linux:
+        if pl.prod_zone and pl.linux:
             src = config_dir / "gitconfig-prod-linux"
         elif pl.prod_zone and pl.windows and pl.citrix:
+            src = config_dir / "gitconfig-prod-windows-citrix"
+        elif pl.adm_zone and pl.windows:
             src = config_dir / "gitconfig-prod-windows-citrix"
         else:
             assert False, "Unsupported platform."
@@ -168,6 +167,14 @@ def set_base_config(pl: Platform) -> None:
             replace_text_in_file("username", windows_username, dst)
 
 
+def set_name_email(name: str, email: str) -> None:
+    command = ["git", "config", "--global", "user.name", name]
+    subprocess.run(command, stdout=subprocess.PIPE)
+
+    command = ["git", "config", "--global", "user.email", email]
+    subprocess.run(command, stdout=subprocess.PIPE)
+
+
 def main():
     detected_platform = Platform()
     print(detected_platform)
@@ -175,13 +182,15 @@ def main():
     name = email = None
     gitconfig_file = Path.home() / ".gitconfig"
     if backup_gitconfig(gitconfig_file):
-        name, email = extract_username_email(gitconfig_file)
+        name, email = extract_name_email(gitconfig_file)
 
     if not (name and email):
-        name, email = request_username_email()
+        name, email = request_name_email()
     print(f"{name} <{email}>")
 
     set_base_config(detected_platform)
+    set_name_email(name, email)
+    print("New .gitconfig created successfully")
 
 
 if __name__ == "__main__":
