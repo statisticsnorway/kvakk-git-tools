@@ -42,6 +42,8 @@ def remove_readonly(func, path, exc_info):
 
 
 class Platform:
+    """Class detecting the platform the script is running on."""
+
     def __init__(self):
         my_os = platform.system()
         self.linux = True if my_os == "Linux" else False
@@ -71,6 +73,8 @@ class Platform:
 
 
 class TempDir:
+    """Context manager class for creating and cleaning up a temporary directory."""
+
     def __init__(self, temp_dir: Path):
         if temp_dir.exists():
             print(f"The directory {temp_dir} already exist.")
@@ -78,12 +82,10 @@ class TempDir:
         self.temp_dir = temp_dir
 
     def __enter__(self):
-        print("Enter TempDir")
         self.temp_dir.mkdir(parents=True)
         return None
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print("Exit TempDir")
         if platform.system() == "Windows":
             # Workaround for bug https://github.com/python/cpython/issues/87823
             shutil.rmtree(self.temp_dir, onerror=remove_readonly)
@@ -126,33 +128,36 @@ def request_username_email() -> tuple[str, str]:
 
 
 def set_base_config(pl: Platform) -> None:
-    root_dir = Path.home() / "temp"
+    temp_dir = Path.home() / "temp-ssb-gitconfig"
 
-    with TempDir(root_dir):
+    with TempDir(temp_dir):
         cmd = [
             "git",
             "clone",
             "https://github.com/statisticsnorway/kvakk-git-tools.git",
         ]
-
         # Fix for python < 3.7, using stdout.
         # Use capture_output=true instead of stdout when python >= 3.7
-        subprocess.run(cmd, cwd=root_dir, stdout=subprocess.PIPE)
+        subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.PIPE)
 
+        config_dir = temp_dir / "kvakk-git-tools" / "recommended"
         dst = Path().home() / ".gitconfig_new"
-        if pl.windows and pl.adm_zone:
-            src = (
-                root_dir
-                / "kvakk-git-tools"
-                / "recommended"
-                / "gitconfig-prod-windows-citrix"
-            )
-            dst.write_bytes(src.read_bytes())
+
+        if pl.adm_zone and pl.windows:
+            src = config_dir / "gitconfig-prod-windows-citrix"
+        elif pl.prod_zone and pl.linux:
+            src = config_dir / "gitconfig-prod-linux"
+        elif pl.prod_zone and pl.windows and pl.citrix:
+            src = config_dir / "gitconfig-prod-windows-citrix"
+        else:
+            assert False, "Unsupported platform."
+
+        dst.write_bytes(src.read_bytes())
 
 
 def main():
-    pl = Platform()
-    print(pl)
+    detected_platform = Platform()
+    print(detected_platform)
 
     name = email = None
     gitconfig_file = Path.home() / ".gitconfig"
@@ -163,7 +168,7 @@ def main():
         name, email = request_username_email()
     print(f"{name} <{email}>")
 
-    set_base_config(pl)
+    set_base_config(detected_platform)
 
 
 if __name__ == "__main__":
