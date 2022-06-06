@@ -7,6 +7,7 @@ import stat
 import subprocess
 from datetime import datetime
 from pathlib import Path
+from typing import Tuple
 
 
 def ping(host: str) -> bool:
@@ -101,7 +102,7 @@ def replace_text_in_file(old_text: str, new_text: str, file: Path) -> None:
         outfile.write(filedata)
 
 
-def extract_username_email(file: Path) -> tuple[str, str]:
+def extract_username_email(file: Path) -> Tuple[str, str]:
     name = email = None
     content = file.read_text().splitlines()
     for line in content:
@@ -128,7 +129,7 @@ def backup_gitconfig(gitconfig_file: Path) -> bool:
         return False
 
 
-def request_username_email() -> tuple[str, str]:
+def request_username_email() -> Tuple[str, str]:
     print("Git needs to know your name (first name and surname) and email address.")
     name = input("Enter name: ")
     email = input("Enter email: ")
