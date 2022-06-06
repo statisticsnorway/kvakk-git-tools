@@ -1,17 +1,17 @@
 [color]
-        ui = auto
+	ui = auto
 [core]
-        autocrlf = false
-        editor = nano
-        eol = lf
+	autocrlf = false
+	editor = nano
+	eol = lf
 [credential]
-        helper = cache --timeout=86400
+	helper = cache --timeout=86400
 [diff "ipynb"]
-        textconv = '/opt/conda/bin/python3' -m nbstripout -t
+	textconv = '/opt/conda/bin/python3' -m nbstripout -t
 [fetch]
-        prune = true
+	prune = true
 [filter "nbstripout"]
-        clean = '/opt/conda/bin/python3' -m nbstripout
-        extrakeys = cell.metadata.pycharm metadata.kernelspec
-        required = true
-        smudge = cat
+	clean = '/opt/conda/bin/python3' -m nbstripout
+	extrakeys = cell.metadata.pycharm metadata.kernelspec
+	required = true
+	smudge = cat

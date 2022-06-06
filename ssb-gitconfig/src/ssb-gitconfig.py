@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import getpass
 import os
 import platform
 import shutil
@@ -93,6 +93,14 @@ class TempDir:
             shutil.rmtree(self.temp_dir)
 
 
+def replace_text_in_file(old_text: str, new_text: str, file: Path) -> None:
+    with open(file, "r") as infile:
+        filedata = infile.read()
+    filedata = filedata.replace(old_text, new_text)
+    with open(file, "w", newline="\n") as outfile:
+        outfile.write(filedata)
+
+
 def extract_username_email(file: Path) -> tuple[str, str]:
     name = email = None
     content = file.read_text().splitlines()
@@ -151,8 +159,12 @@ def set_base_config(pl: Platform) -> None:
             src = config_dir / "gitconfig-prod-windows-citrix"
         else:
             assert False, "Unsupported platform."
-
         dst.write_bytes(src.read_bytes())
+
+        # Replace template username with real username
+        if pl.prod_zone and pl.windows and pl.citrix:
+            windows_username = getpass.getuser()
+            replace_text_in_file("username", windows_username, dst)
 
 
 def main():

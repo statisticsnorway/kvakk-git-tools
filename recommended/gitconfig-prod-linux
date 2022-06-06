@@ -1,28 +1,27 @@
 [color]
-        ui = auto
+	ui = auto
 [core]
-        autocrlf = false
-        editor = nano
-        eol = lf
+	autocrlf = false
+	editor = nano
+	eol = lf
 [credential]
-        helper = cache --timeout=86400
+	helper = cache --timeout=86400
 [diff]
-        tool = meld
+	tool = meld
 [diff "ipynb"]
-        textconv = '/usr/bin/python3' -m nbstripout -t
+	textconv = '/usr/bin/python3' -m nbstripout -t
 [difftool]
-        prompt = false
+	prompt = false
 [fetch]
-        prune = true
+	prune = true
 [filter "nbstripout"]
-        clean = '/usr/bin/python3' -m nbstripout
-        extrakeys = cell.metadata.pycharm metadata.kernelspec
-        required = true
-        smudge = cat
+	clean = '/usr/bin/python3' -m nbstripout
+	extrakeys = cell.metadata.pycharm metadata.kernelspec
+	smudge = cat
 [merge]
-        tool = meld
+	tool = meld
 [mergetool]
-        keepBackup = false
-        prompt = false
+	keepBackup = false
+	prompt = false
 [push]
-        default = simple
+	default = simple
