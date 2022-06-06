@@ -2,15 +2,15 @@
 
 import os
 import platform
+import shutil
+import stat
 import subprocess
 from datetime import datetime
 from pathlib import Path
 
 
 def ping(host: str) -> bool:
-    """
-    Returns True if host (str) responds to a ping request.
-    """
+    """Returns True if host responds to a ping request."""
     # Option for the number of packets is different on Windows and Linux
     ping_param = "-n" if platform.system() == "Windows" else "-c"
 
@@ -26,18 +26,19 @@ def ping(host: str) -> bool:
     return subprocess.run(command, stdout=subprocess.PIPE).returncode == 0
 
 
-def backup_gitconfig():
-    gitconfig_file = Path.home() / ".gitconfig"
-    print(gitconfig_file)
+def remove_readonly(func, path, exc_info):
+    """Workaround for a bug on Windows https://github.com/python/cpython/issues/87823
 
-    if gitconfig_file.is_file():
-        timestamp_str = datetime.now().strftime("%y%m%d_%H%M%S")
-        destination_filename = f".gitconfig_{timestamp_str}"
-        print(f"Backup .gitconfig to {destination_filename}")
-
-        backup_file = Path.home() / destination_filename
-        backup_file.write_text(gitconfig_file.read_text())
-        print(f"Backup created: {backup_file}")
+    On Windows the command shutil.rmtree() fails on read-only files. This function,
+    used by shutil.rmtree(..., onerror=remove_readonly), is the documented workaround
+    described in the issue.
+    """
+    # Clear the readonly bit and reattempt the removal
+    # ERROR_ACCESS_DENIED = 5
+    if func not in (os.unlink, os.rmdir) or exc_info[1].winerror != 5:
+        raise exc_info[1]
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
 
 
 class Platform:
@@ -69,11 +70,91 @@ class Platform:
         )
 
 
+class TempDir:
+    def __init__(self, temp_dir: Path):
+        if temp_dir.exists():
+            print(f"The directory {temp_dir} already exist.")
+            assert temp_dir.exists() is False
+        self.temp_dir = temp_dir
+
+    def __enter__(self):
+        print("Enter TempDir")
+        self.temp_dir.mkdir(parents=True)
+        return None
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print("Exit TempDir")
+        if platform.system() == "Windows":
+            # Workaround for bug https://github.com/python/cpython/issues/87823
+            shutil.rmtree(self.temp_dir, onerror=remove_readonly)
+        else:
+            shutil.rmtree(self.temp_dir)
+
+
+def extract_username_email(file: Path) -> tuple[str, str]:
+    name = email = None
+    content = file.read_text().splitlines()
+    for line in content:
+        words = line.split()
+        if len(words) >= 3:
+            if words[0] == "email":
+                email = words[2]
+            elif words[0] == "name":
+                name = " ".join(words[2:]).strip('"')
+    return name, email
+
+
+def backup_gitconfig(gitconfig_file: Path) -> bool:
+    if gitconfig_file.is_file():
+        timestamp_str = datetime.now().strftime("%y%m%d_%H%M%S")
+        destination_filename = f".gitconfig_{timestamp_str}"
+        print(f"Backup .gitconfig to {destination_filename}")
+
+        backup_file = Path.home() / destination_filename
+        # backup_file.write_bytes(gitconfig_file.read_bytes())
+        print(f"Backup created: {backup_file}")
+        return True
+    else:
+        return False
+
+
+def request_username_email() -> tuple[str, str]:
+    print("Git needs to know your name (first name and surname) and email address.")
+    name = input("Enter name: ")
+    email = input("Enter email: ")
+    return name, email
+
+
+def set_base_config(pl: Platform) -> None:
+    root_dir = Path.home() / "temp"
+
+    with TempDir(root_dir):
+        cmd = ["git", "clone", "https://github.com/statisticsnorway/kvakk-git-tools.git"]
+
+        # Fix for python < 3.7, using stdout.
+        # Use capture_output=true instead of stdout when python >= 3.7
+        subprocess.run(cmd, cwd=root_dir, stdout=subprocess.PIPE)
+
+        dst = Path().home() / ".gitconfig_new"
+        if pl.windows and pl.adm_zone:
+            src = root_dir / "kvakk-git-tools" / "recommended" / "gitconfig-prod-windows-citrix"
+            dst.write_bytes(src.read_bytes())
+
+
 def main():
     pl = Platform()
     print(pl)
 
-    backup_gitconfig()
+    name = email = None
+    gitconfig_file = Path.home() / ".gitconfig"
+    if backup_gitconfig(gitconfig_file):
+        name, email = extract_username_email(gitconfig_file)
+
+    if not (name and email):
+        name, email = request_username_email()
+    print(f"{name} <{email}>")
+
+    set_base_config(pl)
 
 
 if __name__ == "__main__":
