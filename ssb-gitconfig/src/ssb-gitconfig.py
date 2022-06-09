@@ -1,15 +1,27 @@
 #!/usr/bin/env python3
+""" This script sets the recommended .gitconfig for the detected platform.
+
+The recommended base git configs are stored in the public git repository
+https://github.com/statisticsnorway/kvakk-git-tools.git. The script clones this
+repo and selects the base git config based on the detected platform.
+
+If there is an existing .gitconfig file, it is backed up, and the name and email
+address are extracted from it and reused.
+"""
 
 import getpass
 import os
 import platform
+import shutil
+import stat
 import subprocess
+from datetime import datetime
+from pathlib import Path
+from typing import Tuple
 
 
 def ping(host: str) -> bool:
-    """
-    Returns True if host (str) responds to a ping request.
-    """
+    """Returns True if host responds to a ping request."""
     # Option for the number of packets is different on Windows and Linux
     ping_param = "-n" if platform.system() == "Windows" else "-c"
 
@@ -25,7 +37,24 @@ def ping(host: str) -> bool:
     return subprocess.run(command, stdout=subprocess.PIPE).returncode == 0
 
 
+def remove_readonly(func, path, exc_info):
+    """Workaround for a bug on Windows https://github.com/python/cpython/issues/87823
+
+    On Windows the command shutil.rmtree() fails on read-only files. This function,
+    used by shutil.rmtree(..., onerror=remove_readonly), is the documented workaround
+    described in the issue.
+    """
+    # Clear the readonly bit and reattempt the removal
+    # ERROR_ACCESS_DENIED = 5
+    if func not in (os.unlink, os.rmdir) or exc_info[1].winerror != 5:
+        raise exc_info[1]
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+
 class Platform:
+    """Class detecting the platform the script is running on."""
+
     def __init__(self):
         my_os = platform.system()
         self.linux = True if my_os == "Linux" else False
@@ -54,12 +83,125 @@ class Platform:
         )
 
 
-def main():
-    pl = Platform()
-    print(pl)
+class TempDir:
+    """Context manager class for creating and cleaning up a temporary directory."""
 
-    username = getpass.getuser()
-    print(f"Username = {username}")
+    def __init__(self, temp_dir: Path):
+        if temp_dir.exists():
+            print(f"The directory {temp_dir} already exist.")
+            assert temp_dir.exists() is False
+        self.temp_dir = temp_dir
+
+    def __enter__(self):
+        self.temp_dir.mkdir(parents=True)
+        return None
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if platform.system() == "Windows":
+            # Workaround for bug https://github.com/python/cpython/issues/87823
+            shutil.rmtree(self.temp_dir, onerror=remove_readonly)
+        else:
+            shutil.rmtree(self.temp_dir)
+
+
+def replace_text_in_file(old_text: str, new_text: str, file: Path) -> None:
+    with open(file, "r") as infile:
+        filedata = infile.read()
+    filedata = filedata.replace(old_text, new_text)
+    with open(file, "w", newline="\n") as outfile:
+        outfile.write(filedata)
+
+
+def extract_name_email(file: Path) -> Tuple[str, str]:
+    name = email = None
+    content = file.read_text().splitlines()
+    for line in content:
+        words = line.split()
+        if len(words) >= 3:
+            if words[0] == "email":
+                email = words[2]
+            elif words[0] == "name":
+                name = " ".join(words[2:]).strip('"')
+    return name, email
+
+
+def backup_gitconfig(gitconfig_file: Path) -> bool:
+    if gitconfig_file.is_file():
+        timestamp_str = datetime.now().strftime("%y%m%d_%H%M%S")
+        destination_filename = f".gitconfig_{timestamp_str}"
+        print(f"Backup existing .gitconfig to {destination_filename}")
+
+        backup_file = Path.home() / destination_filename
+        backup_file.write_bytes(gitconfig_file.read_bytes())
+        return True
+    else:
+        return False
+
+
+def request_name_email() -> Tuple[str, str]:
+    print("Git needs to know your name (first name and surname) and email address.")
+    name = input("Enter name: ")
+    email = input("Enter email: ")
+    return name, email
+
+
+def set_base_config(pl: Platform) -> None:
+    temp_dir = Path.home() / "temp-ssb-gitconfig"
+
+    with TempDir(temp_dir):
+        cmd = [
+            "git",
+            "clone",
+            "https://github.com/statisticsnorway/kvakk-git-tools.git",
+        ]
+        # Fix for python < 3.7, using stdout.
+        # Use capture_output=true instead of stdout when python >= 3.7
+        subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.PIPE)
+
+        config_dir = temp_dir / "kvakk-git-tools" / "recommended"
+        dst = Path().home() / ".gitconfig"
+
+        if pl.prod_zone and pl.linux:
+            src = config_dir / "gitconfig-prod-linux"
+        elif pl.prod_zone and pl.windows and pl.citrix:
+            src = config_dir / "gitconfig-prod-windows-citrix"
+        elif pl.adm_zone and pl.windows:  # just for testing on local pc
+            src = config_dir / "gitconfig-prod-windows-citrix"
+        else:
+            assert False, "Unsupported platform."
+        dst.write_bytes(src.read_bytes())
+
+        # Replace template username with real username
+        if pl.prod_zone and pl.windows and pl.citrix:
+            windows_username = getpass.getuser()
+            replace_text_in_file("username", windows_username, dst)
+
+
+def set_name_email(name: str, email: str) -> None:
+    command = ["git", "config", "--global", "user.name", name]
+    subprocess.run(command, stdout=subprocess.PIPE)
+
+    command = ["git", "config", "--global", "user.email", email]
+    subprocess.run(command, stdout=subprocess.PIPE)
+
+
+def main():
+    detected_platform = Platform()
+    print("This script sets the recommended .gitconfig for the detected platform.")
+    print(f"Detected platform: {detected_platform}")
+
+    name = email = None
+    gitconfig_file = Path.home() / ".gitconfig"
+    if backup_gitconfig(gitconfig_file):
+        name, email = extract_name_email(gitconfig_file)
+
+    if not (name and email):
+        name, email = request_name_email()
+    print(f"The config will use the following name and email address: {name} <{email}>")
+
+    set_base_config(detected_platform)
+    set_name_email(name, email)
+    print("New .gitconfig created successfully")
 
 
 if __name__ == "__main__":

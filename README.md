@@ -18,3 +18,15 @@ The `ssb-gitconfig` directory is the root directory for the script that should
 set the ssb recommended git config based on the detected environment. It is a
 work in progress and not finished yet.
 
+## Usage
+Linux:
+```shell
+git clone https://github.com/statisticsnorway/kvakk-git-tools.git
+kvakk-git-tools/ssb-gitconfig/src/ssb-gitconfig.py
+```
+
+Windows:
+```shell
+git clone https://github.com/statisticsnorway/kvakk-git-tools.git
+python kvakk-git-tools\ssb-gitconfig\src\ssb-gitconfig.py
+```

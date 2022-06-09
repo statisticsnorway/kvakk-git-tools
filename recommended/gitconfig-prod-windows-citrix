@@ -1,7 +1,7 @@
 [core]
-    autocrlf = false
+	autocrlf = false
 	editor = C:/Users/username/AppData/Local/Microsoft/AppV/Client/Integration/E37253ED-7C5D-4C97-95AA-0E05F1E237AE/Root/notepad++.exe -multiInst -notabbar -nosession -noPlugin
-    eol = lf
+	eol = lf
 [diff]
 	tool = meld
 [difftool]
