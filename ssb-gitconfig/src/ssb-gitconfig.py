@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+""" This script sets the recommended .gitconfig for the detected platform.
+
+The recommended base git configs are stored in the public git repository
+https://github.com/statisticsnorway/kvakk-git-tools.git. The script clones this
+repo and selects the base git config based on the detected platform.
+
+If there is an existing .gitconfig file, it is backed up, and the name and email
+address are extracted from it and reused.
+"""
+
 import getpass
 import os
 import platform
@@ -119,7 +129,7 @@ def backup_gitconfig(gitconfig_file: Path) -> bool:
     if gitconfig_file.is_file():
         timestamp_str = datetime.now().strftime("%y%m%d_%H%M%S")
         destination_filename = f".gitconfig_{timestamp_str}"
-        print(f"Backup .gitconfig to {destination_filename}")
+        print(f"Backup existing .gitconfig to {destination_filename}")
 
         backup_file = Path.home() / destination_filename
         backup_file.write_bytes(gitconfig_file.read_bytes())
@@ -155,7 +165,7 @@ def set_base_config(pl: Platform) -> None:
             src = config_dir / "gitconfig-prod-linux"
         elif pl.prod_zone and pl.windows and pl.citrix:
             src = config_dir / "gitconfig-prod-windows-citrix"
-        elif pl.adm_zone and pl.windows:
+        elif pl.adm_zone and pl.windows:  # just for testing on local pc
             src = config_dir / "gitconfig-prod-windows-citrix"
         else:
             assert False, "Unsupported platform."
@@ -177,7 +187,8 @@ def set_name_email(name: str, email: str) -> None:
 
 def main():
     detected_platform = Platform()
-    print(detected_platform)
+    print("This script sets the recommended .gitconfig for the detected platform.")
+    print(f"Detected platform: {detected_platform}")
 
     name = email = None
     gitconfig_file = Path.home() / ".gitconfig"
@@ -186,7 +197,7 @@ def main():
 
     if not (name and email):
         name, email = request_name_email()
-    print(f"{name} <{email}>")
+    print(f"The config will use the following name and email address: {name} <{email}>")
 
     set_base_config(detected_platform)
     set_name_email(name, email)
