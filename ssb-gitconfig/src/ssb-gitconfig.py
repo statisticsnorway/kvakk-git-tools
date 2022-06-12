@@ -114,7 +114,7 @@ def replace_text_in_file(old_text: str, new_text: str, file: Path) -> None:
 
 def extract_name_email(file: Path) -> Tuple[str, str]:
     name = email = None
-    content = file.read_text().splitlines()
+    content = file.read_text(encoding="utf-8").splitlines()
     for line in content:
         words = line.split()
         if len(words) >= 3:
@@ -149,11 +149,16 @@ def set_base_config(pl: Platform) -> None:
     temp_dir = Path.home() / "temp-ssb-gitconfig"
 
     with TempDir(temp_dir):
-        cmd = [
-            "git",
-            "clone",
-            "https://github.com/statisticsnorway/kvakk-git-tools.git",
-        ]
+        options = []
+        if pl.prod_zone and pl.windows and pl.citrix:
+            options = ["-c", "http.sslVerify=False"]
+
+        cmd = (
+            ["git"]
+            + options
+            + ["clone", "https://github.com/statisticsnorway/kvakk-git-tools.git"]
+        )
+
         # Fix for python < 3.7, using stdout.
         # Use capture_output=true instead of stdout when python >= 3.7
         subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.PIPE)
