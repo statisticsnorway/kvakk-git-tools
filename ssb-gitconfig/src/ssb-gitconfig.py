@@ -170,6 +170,8 @@ def set_base_config(pl: Platform) -> None:
             src = config_dir / "gitconfig-prod-linux"
         elif pl.prod_zone and pl.windows and pl.citrix:
             src = config_dir / "gitconfig-prod-windows-citrix"
+        elif pl.dapla:
+            src = config_dir / "gitconfig-dapla"
         elif pl.adm_zone and pl.windows:  # just for testing on local pc
             src = config_dir / "gitconfig-prod-windows-citrix"
         else:
