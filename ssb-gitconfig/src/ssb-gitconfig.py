@@ -63,16 +63,21 @@ class Platform:
         local_user_path = os.environ.get("LOCAL_USER_PATH")
         self.dapla = True if local_user_path is not None else False
 
-        self.prod_zone = True if ping("jupyter-prod.ssb.no") else False
+        if self.dapla:
+            self.prod_zone = False
+            self.adm_zone = False
+            self.citrix = False
+        else:
+            self.prod_zone = True if ping("jupyter-prod.ssb.no") else False
 
-        self.adm_zone = False
-        if not self.prod_zone and not self.dapla:
-            self.adm_zone = True if ping("aw-dc04.ssb.no") else False
+            self.adm_zone = False
+            if not self.prod_zone and not self.dapla:
+                self.adm_zone = True if ping("aw-dc04.ssb.no") else False
 
-        session_name = os.environ.get("SESSIONNAME")
-        self.citrix = (
-            True if session_name is not None and "ICA" in session_name else False
-        )
+            session_name = os.environ.get("SESSIONNAME")
+            self.citrix = (
+                True if session_name is not None and "ICA" in session_name else False
+            )
 
     def __repr__(self):
         return (
@@ -112,16 +117,15 @@ def replace_text_in_file(old_text: str, new_text: str, file: Path) -> None:
         outfile.write(filedata)
 
 
-def extract_name_email(file: Path) -> Tuple[str, str]:
-    name = email = None
-    content = file.read_text(encoding="utf-8").splitlines()
-    for line in content:
-        words = line.split()
-        if len(words) >= 3:
-            if words[0] == "email":
-                email = words[2]
-            elif words[0] == "name":
-                name = " ".join(words[2:]).strip('"')
+def get_gitconfig_element(element: str) -> str:
+    cmd = ["git", "config", "--get", element]
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+    return None if result.stdout == "" else result.stdout
+
+
+def extract_name_email() -> Tuple[str, str]:
+    name = get_gitconfig_element("user.name")
+    email = get_gitconfig_element("user.email")
     return name, email
 
 
@@ -200,7 +204,7 @@ def main():
     name = email = None
     gitconfig_file = Path.home() / ".gitconfig"
     if backup_gitconfig(gitconfig_file):
-        name, email = extract_name_email(gitconfig_file)
+        name, email = extract_name_email()
 
     if not (name and email):
         name, email = request_name_email()
