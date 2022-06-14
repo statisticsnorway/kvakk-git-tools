@@ -56,24 +56,26 @@ class Platform:
     """Class detecting the platform the script is running on."""
 
     def __init__(self):
+        self.linux = False
+        self.windows = False
+        self.dapla = False
+        self.prod_zone = False
+        self.adm_zone = False
+        self.citrix = False
+
         my_os = platform.system()
-        self.linux = True if my_os == "Linux" else False
-        self.windows = True if my_os == "Windows" else False
+        if my_os == "Linux":
+            self.linux = True
+        if my_os == "Windows":
+            self.windows = True
 
-        local_user_path = os.environ.get("LOCAL_USER_PATH")
-        self.dapla = True if local_user_path is not None else False
+        if os.environ.get("LOCAL_USER_PATH") is not None:
+            self.dapla = True
 
-        if self.dapla:
-            self.prod_zone = False
-            self.adm_zone = False
-            self.citrix = False
-        else:
+        if not self.dapla:
             self.prod_zone = True if ping("jupyter-prod.ssb.no") else False
-
-            self.adm_zone = False
-            if not self.prod_zone and not self.dapla:
+            if not self.prod_zone:
                 self.adm_zone = True if ping("aw-dc04.ssb.no") else False
-
             session_name = os.environ.get("SESSIONNAME")
             self.citrix = (
                 True if session_name is not None and "ICA" in session_name else False
@@ -124,8 +126,8 @@ def get_gitconfig_element(element: str) -> str:
 
 
 def extract_name_email() -> Tuple[str, str]:
-    name = get_gitconfig_element("user.name")
-    email = get_gitconfig_element("user.email")
+    name = get_gitconfig_element("user.name").strip()
+    email = get_gitconfig_element("user.email").strip()
     return name, email
 
 
