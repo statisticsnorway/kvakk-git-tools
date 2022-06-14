@@ -15,6 +15,7 @@ import platform
 import shutil
 import stat
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Tuple
@@ -164,6 +165,7 @@ def set_base_config(pl: Platform) -> None:
             + options
             + ["clone", "https://github.com/statisticsnorway/kvakk-git-tools.git"]
         )
+        print("Get recommended gitconfigs by cloning repo...")
 
         # Fix for python < 3.7, using stdout.
         # Use capture_output=true instead of stdout when python >= 3.7
@@ -181,7 +183,8 @@ def set_base_config(pl: Platform) -> None:
         elif pl.adm_zone and pl.windows:  # just for testing on local pc
             src = config_dir / "gitconfig-prod-windows-citrix"
         else:
-            assert False, "Unsupported platform."
+            print("The detected platform is currently unsupported. Aborting script.")
+            sys.exit(1)
         dst.write_bytes(src.read_bytes())
 
         # Replace template username with real username
@@ -200,7 +203,7 @@ def set_name_email(name: str, email: str) -> None:
 
 def main():
     detected_platform = Platform()
-    print("This script sets the recommended .gitconfig for the detected platform.")
+    print("This script sets the recommended gitconfig for the detected platform.")
     print(f"Detected platform: {detected_platform}")
 
     name = email = None
@@ -214,7 +217,7 @@ def main():
 
     set_base_config(detected_platform)
     set_name_email(name, email)
-    print("New .gitconfig created successfully")
+    print(f"New {gitconfig_file} created successfully.")
 
 
 if __name__ == "__main__":
