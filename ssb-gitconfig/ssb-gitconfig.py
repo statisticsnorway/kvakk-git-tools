@@ -123,12 +123,12 @@ def replace_text_in_file(old_text: str, new_text: str, file: Path) -> None:
 def get_gitconfig_element(element: str) -> str:
     cmd = ["git", "config", "--get", element]
     result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
-    return None if result.stdout == "" else result.stdout
+    return None if result.stdout == "" else result.stdout.strip()
 
 
 def extract_name_email() -> Tuple[str, str]:
-    name = get_gitconfig_element("user.name").strip()
-    email = get_gitconfig_element("user.email").strip()
+    name = get_gitconfig_element("user.name")
+    email = get_gitconfig_element("user.email")
     return name, email
 
 
@@ -152,7 +152,19 @@ def request_name_email() -> Tuple[str, str]:
     return name, email
 
 
-def set_base_config(pl: Platform) -> None:
+def set_base_config(pl: Platform) -> str:
+    """Set the base git config for the detected platform.
+
+    This function clones the repo with the recommended configs to a temporary
+    directory, and sets the recommended base gitconfig. It also returns the
+    recommended .gitattributes.
+
+    Args:
+        pl: A Platform object with the detected platform.
+
+    Returns:
+        The recommended .gitattributes
+    """
     temp_dir = Path.home() / "temp-ssb-gitconfig"
 
     with TempDir(temp_dir):
@@ -192,6 +204,9 @@ def set_base_config(pl: Platform) -> None:
             windows_username = getpass.getuser()
             replace_text_in_file("username", windows_username, dst)
 
+        gitattributes_file = config_dir / "gitattributes"
+        return gitattributes_file.read_text(encoding="utf-8").rstrip()
+
 
 def set_name_email(name: str, email: str) -> None:
     command = ["git", "config", "--global", "user.name", name]
@@ -215,9 +230,15 @@ def main():
         name, email = request_name_email()
     print(f"The config will use the following name and email address: {name} <{email}>")
 
-    set_base_config(detected_platform)
+    gitattributes = set_base_config(detected_platform)
     set_name_email(name, email)
-    print(f"New {gitconfig_file} created successfully.")
+    print(f"A new {gitconfig_file} created successfully.")
+
+    print(
+        "\nMake sure your repos contain a .gitattributes file in the root directory "
+        "with the following lines:"
+    )
+    print(gitattributes)
 
 
 if __name__ == "__main__":
