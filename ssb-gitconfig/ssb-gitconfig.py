@@ -63,12 +63,15 @@ class Platform:
         self.prod_zone = False
         self.adm_zone = False
         self.citrix = False
+        self.mac = False
 
         my_os = platform.system()
         if my_os == "Linux":
             self.linux = True
         if my_os == "Windows":
             self.windows = True
+        if my_os == "Darwin":
+            self.mac = True
 
         if os.environ.get("LOCAL_USER_PATH") is not None:
             self.dapla = True
@@ -85,7 +88,7 @@ class Platform:
     def __repr__(self):
         return (
             f"{self.__class__.__qualname__}(linux={self.linux}, "
-            f"windows={self.windows}, dapla={self.dapla}, "
+            f"windows={self.windows}, mac={self.mac}, dapla={self.dapla}, "
             f"adm_zone={self.adm_zone}, prod_zone={self.prod_zone}, "
             f"citrix={self.citrix})"
         )
@@ -190,10 +193,14 @@ def set_base_config(pl: Platform) -> str:
             src = config_dir / "gitconfig-prod-linux"
         elif pl.prod_zone and pl.windows and pl.citrix:
             src = config_dir / "gitconfig-prod-windows-citrix"
+        elif pl.prod_zone and pl.mac and pl.citrix:
+            src = config_dir / "gitconfig-prod-mac-citrix"
         elif pl.dapla:
             src = config_dir / "gitconfig-dapla"
         elif pl.adm_zone and pl.windows:  # just for testing on local pc
             src = config_dir / "gitconfig-prod-windows-citrix"
+        elif pl.adm_zone and pl.mac:  # just for testing on local mac
+            src = config_dir / "gitconfig-prod-mac-citrix"
         else:
             print("The detected platform is currently unsupported. Aborting script.")
             sys.exit(1)
