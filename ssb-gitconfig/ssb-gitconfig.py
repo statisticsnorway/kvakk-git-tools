@@ -174,8 +174,6 @@ def set_base_config(pl: Platform) -> str:
         options = []
         if pl.prod_zone and pl.windows and pl.citrix:
             options = ["-c", "http.sslVerify=False"]
-        elif pl.prod_zone and pl.mac and pl.citrix:
-            options = ["-c", "http.sslVerify=False"]
 
         cmd = (
             ["git"]
@@ -195,14 +193,12 @@ def set_base_config(pl: Platform) -> str:
             src = config_dir / "gitconfig-prod-linux"
         elif pl.prod_zone and pl.windows and pl.citrix:
             src = config_dir / "gitconfig-prod-windows-citrix"
-        elif pl.prod_zone and pl.mac and pl.citrix:
-            src = config_dir / "gitconfig-prod-mac-citrix"
         elif pl.dapla:
             src = config_dir / "gitconfig-dapla"
         elif pl.adm_zone and pl.windows:  # just for testing on local pc
             src = config_dir / "gitconfig-prod-windows-citrix"
         elif pl.adm_zone and pl.mac:  # just for testing on local mac
-            src = config_dir / "gitconfig-prod-mac-citrix"
+            src = config_dir / "gitconfig-adm-mac"
         else:
             print("The detected platform is currently unsupported. Aborting script.")
             sys.exit(1)
