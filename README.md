@@ -19,7 +19,7 @@ set the ssb recommended git config based on the detected environment. It is a
 work in progress and not finished yet.
 
 ## Usage
-Linux:
+Linux and Mac OS:
 ```shell
 git clone https://github.com/statisticsnorway/kvakk-git-tools.git
 kvakk-git-tools/ssb-gitconfig/src/ssb-gitconfig.py
