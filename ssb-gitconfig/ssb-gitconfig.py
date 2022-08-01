@@ -174,6 +174,8 @@ def set_base_config(pl: Platform) -> str:
         options = []
         if pl.prod_zone and pl.windows and pl.citrix:
             options = ["-c", "http.sslVerify=False"]
+        elif pl.prod_zone and pl.mac and pl.citrix:
+            options = ["-c", "http.sslVerify=False"]
 
         cmd = (
             ["git"]
