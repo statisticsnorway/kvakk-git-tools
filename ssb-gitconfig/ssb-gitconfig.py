@@ -227,7 +227,22 @@ def set_name_email(name: str, email: str) -> None:
 
 def main():
     detected_platform = Platform()
-    print("This script sets the recommended gitconfig for the detected platform.")
+    logo = """
+---------------------------------------------------------------------------------------------------------------------
+|    ________.__  __      _________       __                                                                        |
+|    /  _____/|__|/  |_   /   _____/ _____/  |_ __ ________                                                         |
+|   /   \  ___|  \   __\  \_____  \_/ __ \   __\  |  \____ \\                                                       |
+|   \    \_\  \  ||  |    /        \  ___/|  | |  |  /  |_> >                                                       |
+|    \______  /__||__|   /_______  /\___  >__| |____/|   __/                                                        |
+|            \/                   \/     \/           |__|                                                          |
+|                                                                                                                   |
+| This script will take you through the process of configuring Git, and setup of your GitHub account.               |
+|                                                                                                                   |
+| Please pay attention as you go.                                                                                   |
+|                                                                                                                   |
+---------------------------------------------------------------------------------------------------------------------
+    """
+    print(logo)
     print(f"Detected platform: {detected_platform}")
 
     name = email = None
