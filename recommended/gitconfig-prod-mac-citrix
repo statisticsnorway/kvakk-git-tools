@@ -10,3 +10,11 @@
 	textconv = '/opt/conda/bin/python3' -m nbstripout -t
 [fetch]
 	prune = true
+[merge]
+	tool = meld
+[mergetool]
+	keepBackup = false
+	prompt = false
+[push]
+	default = simple
+
