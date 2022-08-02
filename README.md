@@ -7,7 +7,13 @@ administrative zone and stand alone.
 
 Initially the repo will contain a collection of git configurations for the different
 environments. But the aim is to make a common script, setting up the recommended
-git config, based on the detected environment.
+git config for all SSB platforms, based on the detected environment.
+
+## Status
+The `ssb-gitconfig.py` script works and is testet on the following platforms:
+- Dapla
+- Production zone, Linux (including Jupyter)
+- Production zone, Windows (Citrix)
 
 ## Directories
 The `existing` directory contains configurations collected from existing environments
@@ -19,7 +25,7 @@ set the ssb recommended git config based on the detected environment. It is a
 work in progress and not finished yet.
 
 ## Usage
-Linux:
+Linux and Mac OS:
 ```shell
 git clone https://github.com/statisticsnorway/kvakk-git-tools.git
 kvakk-git-tools/ssb-gitconfig/src/ssb-gitconfig.py

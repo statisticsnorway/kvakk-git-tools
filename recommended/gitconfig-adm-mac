@@ -1,0 +1,16 @@
+[color]
+	ui = auto
+[core]
+	autocrlf = false
+	editor = nano
+	eol = lf
+[fetch]
+	prune = true
+[merge]
+	tool = meld
+[mergetool]
+	keepBackup = false
+	prompt = false
+[push]
+	default = simple
+
