@@ -1,0 +1,22 @@
+[core]
+	autocrlf = false
+	eol = lf
+[diff]
+	tool = meld
+[diff "ipynb"]
+	textconv = C:/Users/username/AppData/Local/Programs/Python/Python310/python.exe -m nbstripout -t
+[difftool]
+	prompt = false
+[fetch]
+	prune = true
+[filter "nbstripout"]
+	clean = C:/Users/username/AppData/Local/Programs/Python/Python310/python.exe -m nbstripout
+	extrakeys = metadata.kernelspec metadata.language_info.version cell.metadata.pycharm metadata.language_info.pygments_lexer metadata.language_info.codemirror_mode.version
+	smudge = cat
+[merge]
+	tool = meld
+[mergetool]
+	keepBackup = false
+	prompt = false
+[mergetool "meld"]
+	path = "C:/Program Files (x86)/Meld/Meld.exe"

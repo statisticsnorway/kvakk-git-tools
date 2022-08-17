@@ -9,3 +9,4 @@ wheel = "*"
 [dev-packages]
 black = {extras = ["jupyter"], version = "*"}
 isort = "*"
+mypy = "*"

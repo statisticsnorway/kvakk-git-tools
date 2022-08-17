@@ -6,6 +6,8 @@
 	tool = meld
 [difftool]
 	prompt = false
+[fetch]
+	prune = true
 [http]
 	sslVerify = false
 [merge]
