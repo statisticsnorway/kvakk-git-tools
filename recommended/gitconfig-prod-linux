@@ -1,7 +1,7 @@
 [color]
 	ui = auto
 [core]
-	autocrlf = false
+	autocrlf = input
 	editor = nano
 	eol = lf
 [credential]
