@@ -18,6 +18,8 @@
 	clean = '/usr/bin/python3' -m nbstripout
 	extrakeys = metadata.kernelspec metadata.language_info.version cell.metadata.pycharm metadata.language_info.pygments_lexer metadata.language_info.codemirror_mode.version
 	smudge = cat
+[http]
+	sslVerify = false
 [merge]
 	tool = meld
 [mergetool]

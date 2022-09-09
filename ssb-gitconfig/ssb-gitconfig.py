@@ -172,7 +172,9 @@ def set_base_config(pl: Platform) -> str:
 
     with TempDir(temp_dir):
         options = []
-        if pl.prod_zone and pl.windows and pl.citrix:
+        prod_zone_windows = pl.prod_zone and pl.windows and pl.citrix
+        prod_zone_linux = pl.prod_zone and pl.linux
+        if prod_zone_windows or prod_zone_linux:
             options = ["-c", "http.sslVerify=False"]
 
         cmd = (
