@@ -8,7 +8,7 @@ repo and selects the base git config based on the detected platform.
 If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
-
+import argparse
 import getpass
 import os
 import platform
@@ -155,7 +155,7 @@ def request_name_email() -> Tuple[str, str]:
     return name, email
 
 
-def set_base_config(pl: Platform) -> str:
+def set_base_config(pl: Platform, test: bool) -> str:
     """Set the base git config for the detected platform.
 
     This function clones the repo with the recommended configs to a temporary
@@ -164,6 +164,7 @@ def set_base_config(pl: Platform) -> str:
 
     Args:
         pl: A Platform object with the detected platform.
+        test: True if testing
 
     Returns:
         The recommended .gitattributes
@@ -201,9 +202,11 @@ def set_base_config(pl: Platform) -> str:
             src = config_dir / "gitconfig-prod-windows-citrix"
         elif pl.adm_zone and pl.mac:  # just for testing on local mac
             src = config_dir / "gitconfig-adm-mac"
-        else:
+        elif not test:
             print("The detected platform is currently unsupported. Aborting script.")
             sys.exit(1)
+        else:
+            src = config_dir / "gitconfig-prod-linux"  # use this when testing
         dst.write_bytes(src.read_bytes())
 
         # Replace template username with real username
@@ -223,7 +226,7 @@ def set_name_email(name: str, email: str) -> None:
     subprocess.run(command, stdout=subprocess.PIPE)
 
 
-def main():
+def main(test: bool) -> None:
     detected_platform = Platform()
     print("This script sets the recommended gitconfig for the detected platform.")
     print(f"Detected platform: {detected_platform}")
@@ -237,7 +240,7 @@ def main():
         name, email = request_name_email()
     print(f"The config will use the following name and email address: {name} <{email}>")
 
-    gitattributes = set_base_config(detected_platform)
+    gitattributes = set_base_config(detected_platform, test)
     set_name_email(name, email)
     print(f"A new {gitconfig_file} created successfully.")
 
@@ -249,4 +252,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__)
+    parser.add_argument(
+        "--test", action="store_true", help="used when testing the script"
+    )
+    args = parser.parse_args()
+
+    main(args.test)
