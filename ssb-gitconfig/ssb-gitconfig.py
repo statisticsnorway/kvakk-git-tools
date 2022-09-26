@@ -225,13 +225,13 @@ def set_base_config(pl: Platform, test: bool) -> str:
         subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.PIPE)
         dst.write_bytes(src.read_bytes())
 
-    # Replace template username with real username
-    if pl.name() is PlatformName.PROD_WINDOWS_CITRIX:
-        windows_username = getpass.getuser()
-        replace_text_in_file("username", windows_username, dst)
+        # Replace template username with real username
+        if pl.name() is PlatformName.PROD_WINDOWS_CITRIX:
+            windows_username = getpass.getuser()
+            replace_text_in_file("username", windows_username, dst)
 
-    gitattributes_file = config_dir / "gitattributes"
-    return gitattributes_file.read_text(encoding="utf-8").rstrip()
+        gitattributes_file = config_dir / "gitattributes"
+        return gitattributes_file.read_text(encoding="utf-8").rstrip()
 
 
 def set_name_email(name: str, email: str) -> None:
@@ -253,7 +253,11 @@ def main(test: bool) -> None:
         name, email = extract_name_email()
 
     if not (name and email):
-        name, email = request_name_email()
+        if test:
+            name = "John Doe"
+            email = "johndoe@example.com"
+        else:
+            name, email = request_name_email()
     print(f"The config will use the following name and email address: {name} <{email}>")
 
     gitattributes = set_base_config(detected_platform, test)
