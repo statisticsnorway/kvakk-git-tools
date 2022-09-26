@@ -17,6 +17,7 @@ import stat
 import subprocess
 import sys
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from typing import Tuple
 
@@ -53,6 +54,15 @@ def remove_readonly(func, path, exc_info):
     func(path)
 
 
+class PlatformName(Enum):
+    DAPLA = "dapla"
+    PROD_LINUX = "prod-linux"
+    PROD_WINDOWS_CITRIX = "prod-windows-citrix"
+    ADM_WINDOWS = "adm-windows"
+    ADM_MAC = "adm-mac"
+    UNKNOWN = "unknown"
+
+
 class Platform:
     """Class detecting the platform the script is running on."""
 
@@ -87,11 +97,24 @@ class Platform:
 
     def __repr__(self):
         return (
-            f"{self.__class__.__qualname__}(linux={self.linux}, "
+            f"{self.name().name}(linux={self.linux}, "
             f"windows={self.windows}, mac={self.mac}, dapla={self.dapla}, "
             f"adm_zone={self.adm_zone}, prod_zone={self.prod_zone}, "
             f"citrix={self.citrix})"
         )
+
+    def name(self) -> PlatformName:
+        if self.prod_zone and self.linux:
+            return PlatformName.PROD_LINUX
+        if self.prod_zone and self.windows and self.citrix:
+            return PlatformName.PROD_WINDOWS_CITRIX
+        if self.dapla:
+            return PlatformName.DAPLA
+        if self.adm_zone and self.windows:
+            return PlatformName.ADM_WINDOWS
+        if self.adm_zone and self.mac:
+            return PlatformName.ADM_MAC
+        return PlatformName.UNKNOWN
 
 
 class TempDir:
@@ -170,52 +193,45 @@ def set_base_config(pl: Platform, test: bool) -> str:
         The recommended .gitattributes
     """
     temp_dir = Path.home() / "temp-ssb-gitconfig"
+    config_dir = temp_dir / "kvakk-git-tools" / "recommended"
+    dst = Path().home() / ".gitconfig"
+    src = config_dir / f"gitconfig-{pl.name().value}"
+    if test:
+        src = config_dir / "gitconfig-dapla"
+    elif (
+        pl.name() is PlatformName.UNKNOWN
+        or pl.name() is PlatformName.ADM_WINDOWS
+        or pl.name() is PlatformName.ADM_MAC
+    ):
+        print("The detected platform is currently unsupported. Aborting script.")
+        sys.exit(1)
 
+    options = []
+    prod_zone_windows = pl.name() is PlatformName.PROD_WINDOWS_CITRIX
+    prod_zone_linux = pl.name() is PlatformName.PROD_LINUX
+    if prod_zone_windows or prod_zone_linux:
+        options = ["-c", "http.sslVerify=False"]
+
+    cmd = (
+        ["git"]
+        + options
+        + ["clone", "https://github.com/statisticsnorway/kvakk-git-tools.git"]
+    )
+    print("Get recommended gitconfigs by cloning repo...")
+
+    # Fix for python < 3.7, using stdout.
+    # Use capture_output=true instead of stdout when python >= 3.7
     with TempDir(temp_dir):
-        options = []
-        prod_zone_windows = pl.prod_zone and pl.windows and pl.citrix
-        prod_zone_linux = pl.prod_zone and pl.linux
-        if prod_zone_windows or prod_zone_linux:
-            options = ["-c", "http.sslVerify=False"]
-
-        cmd = (
-            ["git"]
-            + options
-            + ["clone", "https://github.com/statisticsnorway/kvakk-git-tools.git"]
-        )
-        print("Get recommended gitconfigs by cloning repo...")
-
-        # Fix for python < 3.7, using stdout.
-        # Use capture_output=true instead of stdout when python >= 3.7
         subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.PIPE)
-
-        config_dir = temp_dir / "kvakk-git-tools" / "recommended"
-        dst = Path().home() / ".gitconfig"
-
-        if pl.prod_zone and pl.linux:
-            src = config_dir / "gitconfig-prod-linux"
-        elif pl.prod_zone and pl.windows and pl.citrix:
-            src = config_dir / "gitconfig-prod-windows-citrix"
-        elif pl.dapla:
-            src = config_dir / "gitconfig-dapla"
-        elif pl.adm_zone and pl.windows:  # just for testing on local pc
-            src = config_dir / "gitconfig-prod-windows-citrix"
-        elif pl.adm_zone and pl.mac:  # just for testing on local mac
-            src = config_dir / "gitconfig-adm-mac"
-        elif not test:
-            print("The detected platform is currently unsupported. Aborting script.")
-            sys.exit(1)
-        else:
-            src = config_dir / "gitconfig-prod-linux"  # use this when testing
         dst.write_bytes(src.read_bytes())
 
-        # Replace template username with real username
-        if pl.prod_zone and pl.windows and pl.citrix:
-            windows_username = getpass.getuser()
-            replace_text_in_file("username", windows_username, dst)
+    # Replace template username with real username
+    if pl.name() is PlatformName.PROD_WINDOWS_CITRIX:
+        windows_username = getpass.getuser()
+        replace_text_in_file("username", windows_username, dst)
 
-        gitattributes_file = config_dir / "gitattributes"
-        return gitattributes_file.read_text(encoding="utf-8").rstrip()
+    gitattributes_file = config_dir / "gitattributes"
+    return gitattributes_file.read_text(encoding="utf-8").rstrip()
 
 
 def set_name_email(name: str, email: str) -> None:
