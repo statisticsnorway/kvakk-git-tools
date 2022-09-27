@@ -1,0 +1,48 @@
+name: Platforms
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  platforms:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Install poetry
+        run: pipx install poetry
+
+        # Need to pin python version to 3.10.6 because af bug in mypy with python > 3.10.6.
+        # Reset to version 3.10 when bug in mypy is fixed, se
+        # https://github.com/python/mypy/issues/13627 for status.
+      - name: Set up Python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10.6"
+          cache: "poetry"
+      - run: poetry install
+
+      - name: List installed libraries
+        run: poetry run pip list
+
+      - name: Run mypy
+        run: |
+          poetry run mypy ssb-gitconfig/ssb-gitconfig.py
+
+      - name: Run script
+        run: |
+          poetry run ssb-gitconfig/ssb-gitconfig.py --test
+
+#      - name: Run pytest with coverage
+#        run: |
+#          pipenv run pytest --verbose --durations=5 --cov --cov-report=term --cov-report=xml --junitxml=pytest-report.xml
+#
+#      - name: SonarCloud Scan
+#        uses: SonarSource/sonarcloud-github-action@master
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

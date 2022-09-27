@@ -146,13 +146,13 @@ def replace_text_in_file(old_text: str, new_text: str, file: Path) -> None:
         outfile.write(filedata)
 
 
-def get_gitconfig_element(element: str) -> str:
+def get_gitconfig_element(element: str) -> str | None:
     cmd = ["git", "config", "--get", element]
     result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
     return None if result.stdout == "" else result.stdout.strip()
 
 
-def extract_name_email() -> Tuple[str, str]:
+def extract_name_email() -> Tuple[str | None, str | None]:
     name = get_gitconfig_element("user.name")
     email = get_gitconfig_element("user.email")
     return name, email
