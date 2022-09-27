@@ -19,7 +19,7 @@ import sys
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Tuple
+from typing import Optional, Tuple
 
 
 def ping(host: str) -> bool:
@@ -29,7 +29,7 @@ def ping(host: str) -> bool:
 
     # Timeout is -w <milliseconds> on Windows, and -W <seconds> on Linux
     timeout_param = "-w" if platform.system() == "Windows" else "-W"
-    timeout_value = "1000" if platform.system() == "Windows" else "1"
+    timeout_value = "1" if platform.system() == "Linux" else "1000"
 
     # Building the command. Ex: "ping -c 1 google.com"
     command = ["ping", ping_param, "1", timeout_param, timeout_value, host]
@@ -146,13 +146,13 @@ def replace_text_in_file(old_text: str, new_text: str, file: Path) -> None:
         outfile.write(filedata)
 
 
-def get_gitconfig_element(element: str) -> str | None:
+def get_gitconfig_element(element: str) -> Optional[str]:
     cmd = ["git", "config", "--get", element]
     result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
     return None if result.stdout == "" else result.stdout.strip()
 
 
-def extract_name_email() -> Tuple[str | None, str | None]:
+def extract_name_email() -> Tuple[Optional[str], Optional[str]]:
     name = get_gitconfig_element("user.name")
     email = get_gitconfig_element("user.email")
     return name, email
