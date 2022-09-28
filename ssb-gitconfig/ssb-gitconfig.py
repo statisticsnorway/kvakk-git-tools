@@ -8,7 +8,7 @@ repo and selects the base git config based on the detected platform.
 If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
-
+import argparse
 import getpass
 import os
 import platform
@@ -17,8 +17,9 @@ import stat
 import subprocess
 import sys
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
-from typing import Tuple
+from typing import Optional, Tuple
 
 
 def ping(host: str) -> bool:
@@ -28,7 +29,7 @@ def ping(host: str) -> bool:
 
     # Timeout is -w <milliseconds> on Windows, and -W <seconds> on Linux
     timeout_param = "-w" if platform.system() == "Windows" else "-W"
-    timeout_value = "1000" if platform.system() == "Windows" else "1"
+    timeout_value = "1" if platform.system() == "Linux" else "1000"
 
     # Building the command. Ex: "ping -c 1 google.com"
     command = ["ping", ping_param, "1", timeout_param, timeout_value, host]
@@ -51,6 +52,15 @@ def remove_readonly(func, path, exc_info):
         raise exc_info[1]
     os.chmod(path, stat.S_IWRITE)
     func(path)
+
+
+class PlatformName(Enum):
+    DAPLA = "dapla"
+    PROD_LINUX = "prod-linux"
+    PROD_WINDOWS_CITRIX = "prod-windows-citrix"
+    ADM_WINDOWS = "adm-windows"
+    ADM_MAC = "adm-mac"
+    UNKNOWN = "unknown"
 
 
 class Platform:
@@ -87,11 +97,24 @@ class Platform:
 
     def __repr__(self):
         return (
-            f"{self.__class__.__qualname__}(linux={self.linux}, "
+            f"{self.name().name}(linux={self.linux}, "
             f"windows={self.windows}, mac={self.mac}, dapla={self.dapla}, "
             f"adm_zone={self.adm_zone}, prod_zone={self.prod_zone}, "
             f"citrix={self.citrix})"
         )
+
+    def name(self) -> PlatformName:
+        if self.prod_zone and self.linux:
+            return PlatformName.PROD_LINUX
+        if self.prod_zone and self.windows and self.citrix:
+            return PlatformName.PROD_WINDOWS_CITRIX
+        if self.dapla:
+            return PlatformName.DAPLA
+        if self.adm_zone and self.windows:
+            return PlatformName.ADM_WINDOWS
+        if self.adm_zone and self.mac:
+            return PlatformName.ADM_MAC
+        return PlatformName.UNKNOWN
 
 
 class TempDir:
@@ -123,13 +146,13 @@ def replace_text_in_file(old_text: str, new_text: str, file: Path) -> None:
         outfile.write(filedata)
 
 
-def get_gitconfig_element(element: str) -> str:
+def get_gitconfig_element(element: str) -> Optional[str]:
     cmd = ["git", "config", "--get", element]
     result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
     return None if result.stdout == "" else result.stdout.strip()
 
 
-def extract_name_email() -> Tuple[str, str]:
+def extract_name_email() -> Tuple[Optional[str], Optional[str]]:
     name = get_gitconfig_element("user.name")
     email = get_gitconfig_element("user.email")
     return name, email
@@ -155,7 +178,7 @@ def request_name_email() -> Tuple[str, str]:
     return name, email
 
 
-def set_base_config(pl: Platform) -> str:
+def set_base_config(pl: Platform, test: bool) -> str:
     """Set the base git config for the detected platform.
 
     This function clones the repo with the recommended configs to a temporary
@@ -164,50 +187,46 @@ def set_base_config(pl: Platform) -> str:
 
     Args:
         pl: A Platform object with the detected platform.
+        test: True if testing
 
     Returns:
         The recommended .gitattributes
     """
     temp_dir = Path.home() / "temp-ssb-gitconfig"
+    config_dir = temp_dir / "kvakk-git-tools" / "recommended"
+    dst = Path().home() / ".gitconfig"
+    src = config_dir / f"gitconfig-{pl.name().value}"
+    if test:
+        src = config_dir / "gitconfig-dapla"
+    elif (
+        pl.name() is PlatformName.UNKNOWN
+        or pl.name() is PlatformName.ADM_WINDOWS
+        or pl.name() is PlatformName.ADM_MAC
+    ):
+        print("The detected platform is currently unsupported. Aborting script.")
+        sys.exit(1)
 
+    options = []
+    prod_zone_windows = pl.name() is PlatformName.PROD_WINDOWS_CITRIX
+    prod_zone_linux = pl.name() is PlatformName.PROD_LINUX
+    if prod_zone_windows or prod_zone_linux:
+        options = ["-c", "http.sslVerify=False"]
+
+    cmd = (
+        ["git"]
+        + options
+        + ["clone", "https://github.com/statisticsnorway/kvakk-git-tools.git"]
+    )
+    print("Get recommended gitconfigs by cloning repo...")
+
+    # Fix for python < 3.7, using stdout.
+    # Use capture_output=true instead of stdout when python >= 3.7
     with TempDir(temp_dir):
-        options = []
-        prod_zone_windows = pl.prod_zone and pl.windows and pl.citrix
-        prod_zone_linux = pl.prod_zone and pl.linux
-        if prod_zone_windows or prod_zone_linux:
-            options = ["-c", "http.sslVerify=False"]
-
-        cmd = (
-            ["git"]
-            + options
-            + ["clone", "https://github.com/statisticsnorway/kvakk-git-tools.git"]
-        )
-        print("Get recommended gitconfigs by cloning repo...")
-
-        # Fix for python < 3.7, using stdout.
-        # Use capture_output=true instead of stdout when python >= 3.7
         subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.PIPE)
-
-        config_dir = temp_dir / "kvakk-git-tools" / "recommended"
-        dst = Path().home() / ".gitconfig"
-
-        if pl.prod_zone and pl.linux:
-            src = config_dir / "gitconfig-prod-linux"
-        elif pl.prod_zone and pl.windows and pl.citrix:
-            src = config_dir / "gitconfig-prod-windows-citrix"
-        elif pl.dapla:
-            src = config_dir / "gitconfig-dapla"
-        elif pl.adm_zone and pl.windows:  # just for testing on local pc
-            src = config_dir / "gitconfig-prod-windows-citrix"
-        elif pl.adm_zone and pl.mac:  # just for testing on local mac
-            src = config_dir / "gitconfig-adm-mac"
-        else:
-            print("The detected platform is currently unsupported. Aborting script.")
-            sys.exit(1)
         dst.write_bytes(src.read_bytes())
 
         # Replace template username with real username
-        if pl.prod_zone and pl.windows and pl.citrix:
+        if pl.name() is PlatformName.PROD_WINDOWS_CITRIX:
             windows_username = getpass.getuser()
             replace_text_in_file("username", windows_username, dst)
 
@@ -223,7 +242,7 @@ def set_name_email(name: str, email: str) -> None:
     subprocess.run(command, stdout=subprocess.PIPE)
 
 
-def main():
+def main(test: bool) -> None:
     detected_platform = Platform()
     print("This script sets the recommended gitconfig for the detected platform.")
     print(f"Detected platform: {detected_platform}")
@@ -234,10 +253,14 @@ def main():
         name, email = extract_name_email()
 
     if not (name and email):
-        name, email = request_name_email()
+        if test:
+            name = "John Doe"
+            email = "johndoe@example.com"
+        else:
+            name, email = request_name_email()
     print(f"The config will use the following name and email address: {name} <{email}>")
 
-    gitattributes = set_base_config(detected_platform)
+    gitattributes = set_base_config(detected_platform, test)
     set_name_email(name, email)
     print(f"A new {gitconfig_file} created successfully.")
 
@@ -249,4 +272,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__)
+    parser.add_argument(
+        "--test", action="store_true", help="used when testing the script"
+    )
+    args = parser.parse_args()
+
+    main(args.test)

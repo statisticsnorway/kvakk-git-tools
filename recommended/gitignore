@@ -7,8 +7,11 @@
 # The section below contains SSB specific ignores, not included in the Python-
 # and R-ignores from GitHub.
 
+*.csv
 *.parquet
 *.sas7bdat
+*.xlsx
+*.zip
 
 
 # The section below is from the GitHub .gitignore template for Python:
@@ -221,7 +224,8 @@ vignettes/*.pdf
 .Renviron
 
 # pkgdown site
-docs/
+# SSB: The directory below is comment because default when generating documentation with Sphinx
+#docs/
 
 # translation temp files
 po/*~
