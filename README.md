@@ -12,7 +12,7 @@ git config for all SSB platforms, based on the detected environment.
 
 ## Status
 
-The `ssb-gitconfig.py` script works and is testet on the following platforms:
+The `ssb-gitconfig.py` script works and is tested on the following platforms:
 
 - Dapla
 - Production zone, Linux (including Jupyter)
@@ -42,4 +42,35 @@ Windows:
 ```shell
 git clone https://github.com/statisticsnorway/kvakk-git-tools.git
 python kvakk-git-tools\ssb-gitconfig\src\ssb-gitconfig.py
+```
+
+## Developer guide
+
+### Initial setup
+
+The Poetry tool is used for dependency management. Install poetry as described on the
+[Poetry installation page](https://python-poetry.org/docs/#installation), if not
+already installed. Then run the following commands in the cloned repo:
+
+```shell
+poetry install
+poetry run pre-commit install
+```
+
+### Source code requirements
+
+- The source code must support python version 3.6, because one of the supported platforms
+  is based on RHEL 7.
+- It shall be possible to run the script from a plain python installation. That is:
+  Don't use external libraries.
+- The source code shall run on these platforms: Linux, Windows and macOS.
+
+### Linting
+
+You can do local linting with the following commands:
+
+```shell
+poetry run flake8
+poetry run mypy .
+poetry run pylint ssb-gitconfig/ssb-gitconfig.py
 ```
