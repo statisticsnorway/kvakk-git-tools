@@ -13,12 +13,16 @@ wheel = "^0.37.1"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["d"], version = "^22.8.0"}
+darglint = "^1.8.1"
+flake8 = "^5.0.4"
+flake8-bandit = "^4.1.1"
+flake8-bugbear = "^22.9.23"
+flake8-docstrings = "^1.6.0"
 isort = "^5.10.1"
 mypy = "^0.971"
-flake8 = "^5.0.4"
+pep8-naming = "^0.13.2"
 pre-commit = "^2.20.0"
 pre-commit-hooks = "^4.3.0"
-darglint = "^1.8.1"
 pylint = "^2.15.3"
 
 [build-system]
@@ -31,3 +35,6 @@ lines_after_imports = 2
 
 [tool.pylint.format]
 max-line-length = "88"
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = "C0103,W1514"

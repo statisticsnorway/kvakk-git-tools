@@ -40,7 +40,7 @@ def ping(host: str) -> bool:
 
 
 def remove_readonly(func, path, exc_info):
-    """Workaround for a bug on Windows https://github.com/python/cpython/issues/87823
+    """Workaround for a bug on Windows https://github.com/python/cpython/issues/87823.
 
     On Windows the command shutil.rmtree() fails on read-only files. This function,
     used by shutil.rmtree(..., onerror=remove_readonly), is the documented workaround
@@ -55,6 +55,8 @@ def remove_readonly(func, path, exc_info):
 
 
 class PlatformName(Enum):
+    """Enum representing the platform names. Used in the Platform class."""
+
     DAPLA = "dapla"
     PROD_LINUX = "prod-linux"
     PROD_WINDOWS_CITRIX = "prod-windows-citrix"
@@ -87,13 +89,11 @@ class Platform:
             self.dapla = True
 
         if not self.dapla:
-            self.prod_zone = True if ping("sl-jupyter-p.ssb.no") else False
+            self.prod_zone = ping("sl-jupyter-p.ssb.no")
             if not self.prod_zone:
-                self.adm_zone = True if ping("aw-dc04.ssb.no") else False
+                self.adm_zone = ping("aw-dc04.ssb.no")
             session_name = os.environ.get("SESSIONNAME")
-            self.citrix = (
-                True if session_name is not None and "ICA" in session_name else False
-            )
+            self.citrix = session_name is not None and "ICA" in session_name
 
     def __repr__(self):
         return (
@@ -120,15 +120,13 @@ class Platform:
 class TempDir:
     """Context manager class for creating and cleaning up a temporary directory."""
 
-    def __init__(self, temp_dir: Path):
+    def __init__(self, temp_dir: Path) -> None:
         if temp_dir.exists():
-            print(f"The directory {temp_dir} already exist.")
-            assert temp_dir.exists() is False
+            raise RuntimeError(f"The directory {temp_dir} already exist.")
         self.temp_dir = temp_dir
 
     def __enter__(self):
         self.temp_dir.mkdir(parents=True)
-        return None
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if platform.system() == "Windows":
@@ -167,8 +165,7 @@ def backup_gitconfig(gitconfig_file: Path) -> bool:
         backup_file = Path.home() / destination_filename
         backup_file.write_bytes(gitconfig_file.read_bytes())
         return True
-    else:
-        return False
+    return False
 
 
 def request_name_email() -> Tuple[str, str]:
@@ -222,7 +219,7 @@ def set_base_config(pl: Platform, test: bool) -> str:
     # Fix for python < 3.7, using stdout.
     # Use capture_output=true instead of stdout when python >= 3.7
     with TempDir(temp_dir):
-        subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.PIPE)
+        subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.PIPE, check=True)
         dst.write_bytes(src.read_bytes())
 
         # Replace template username with real username
@@ -236,10 +233,10 @@ def set_base_config(pl: Platform, test: bool) -> str:
 
 def set_name_email(name: str, email: str) -> None:
     command = ["git", "config", "--global", "user.name", name]
-    subprocess.run(command, stdout=subprocess.PIPE)
+    subprocess.run(command, stdout=subprocess.PIPE, check=True)
 
     command = ["git", "config", "--global", "user.email", email]
-    subprocess.run(command, stdout=subprocess.PIPE)
+    subprocess.run(command, stdout=subprocess.PIPE, check=True)
 
 
 def main(test: bool) -> None:
