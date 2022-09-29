@@ -8,6 +8,9 @@ repo and selects the base git config based on the detected platform.
 If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
+
+__version__ = "1.0.0"
+
 import argparse
 import getpass
 import os
@@ -268,11 +271,27 @@ def main(test: bool) -> None:
     print(gitattributes)
 
 
+def check_python_version() -> None:
+    if (
+        sys.version_info.major == 3 and sys.version_info.minor < 6
+    ) or sys.version_info.major < 3:
+        print("This script requires python version >= 3.6")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
+    check_python_version()
+
     parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__)
     parser.add_argument(
         "--test", action="store_true", help="used when testing the script"
     )
+    parser.add_argument(
+        "--version", action="store_true", help="print he version number of the script"
+    )
     args = parser.parse_args()
 
-    main(args.test)
+    if args.version:
+        print(f"ssb-gitconfig.py version: {__version__}")
+    else:
+        main(args.test)
