@@ -9,7 +9,7 @@ If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 import argparse
 import getpass
@@ -63,6 +63,7 @@ class PlatformName(Enum):
     DAPLA = "dapla"
     PROD_LINUX = "prod-linux"
     PROD_WINDOWS_CITRIX = "prod-windows-citrix"
+    PROD_WINDOWS_VDI = "prod-windows-vdi"
     ADM_WINDOWS = "adm-windows"
     ADM_MAC = "adm-mac"
     UNKNOWN = "unknown"
@@ -111,6 +112,8 @@ class Platform:
             return PlatformName.PROD_LINUX
         if self.prod_zone and self.windows and self.citrix:
             return PlatformName.PROD_WINDOWS_CITRIX
+        if self.prod_zone and self.windows and not self.citrix:
+            return PlatformName.PROD_WINDOWS_VDI
         if self.dapla:
             return PlatformName.DAPLA
         if self.adm_zone and self.windows:
@@ -118,6 +121,17 @@ class Platform:
         if self.adm_zone and self.mac:
             return PlatformName.ADM_MAC
         return PlatformName.UNKNOWN
+
+    def is_unsupported(self) -> bool:
+        unsupported = [
+            PlatformName.PROD_WINDOWS_VDI,
+            PlatformName.ADM_WINDOWS,
+            PlatformName.ADM_MAC,
+            PlatformName.UNKNOWN,
+        ]
+        if self.name() in unsupported:
+            return True
+        return False
 
 
 class TempDir:
@@ -198,13 +212,6 @@ def set_base_config(pl: Platform, test: bool) -> str:
     src = config_dir / f"gitconfig-{pl.name().value}"
     if test:
         src = config_dir / "gitconfig-dapla"
-    elif (
-        pl.name() is PlatformName.UNKNOWN
-        or pl.name() is PlatformName.ADM_WINDOWS
-        or pl.name() is PlatformName.ADM_MAC
-    ):
-        print("The detected platform is currently unsupported. Aborting script.")
-        sys.exit(1)
 
     options = []
     prod_zone_windows = pl.name() is PlatformName.PROD_WINDOWS_CITRIX
@@ -245,7 +252,11 @@ def set_name_email(name: str, email: str) -> None:
 def main(test: bool) -> None:
     detected_platform = Platform()
     print("This script sets the recommended gitconfig for the detected platform.")
+    print(f"Script version: {__version__}")
     print(f"Detected platform: {detected_platform}")
+    if not test and detected_platform.is_unsupported():
+        print("The detected platform is currently unsupported by this script. Abort.")
+        sys.exit(1)
 
     name = email = None
     gitconfig_file = Path.home() / ".gitconfig"
