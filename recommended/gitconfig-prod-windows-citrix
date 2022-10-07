@@ -8,6 +8,8 @@
 	prompt = false
 [http]
 	sslVerify = false
+[init]
+	defaultBranch = main
 [merge]
 	tool = meld
 [mergetool]
@@ -15,3 +17,5 @@
 	keepBackup = false
 [mergetool "meld"]
 	path = "C:/Program Files (x86)/Meld/Meld.exe"
+[push]
+	default = current

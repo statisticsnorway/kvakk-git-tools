@@ -6,10 +6,12 @@
 	eol = lf
 [fetch]
 	prune = true
+[init]
+	defaultBranch = main
 [merge]
 	tool = meld
 [mergetool]
 	keepBackup = false
 	prompt = false
 [push]
-	default = simple
+	default = current
