@@ -9,7 +9,7 @@ If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 import argparse
 import getpass
@@ -89,7 +89,8 @@ class Platform:
         if my_os == "Darwin":
             self.mac = True
 
-        if os.environ.get("LOCAL_USER_PATH") is not None:
+        jupyter_spec = os.environ.get("JUPYTER_IMAGE_SPEC")
+        if jupyter_spec is not None and "dapla" in jupyter_spec:
             self.dapla = True
 
         if not self.dapla:

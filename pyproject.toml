@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kvakk-git-tools"
-version = "1.0.0"
+version = "1.0.2"
 description = "Recommended git config and git scripts for Statistics Norway."
 authors = ["Arne Sørli <81353974+arneso-ssb@users.noreply.github.com>"]
 license = "MIT"
@@ -9,7 +9,7 @@ packages = [{include = "kvakk_git_tools"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-wheel = "^0.37.1"
+wheel = "^0.38.4"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["d"], version = "^22.8.0"}
