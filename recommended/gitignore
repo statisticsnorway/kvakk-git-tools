@@ -8,8 +8,13 @@
 # and R-ignores from GitHub.
 
 *.csv
+*.db
+*.feather
+*.gz
+*.orig
 *.parquet
 *.sas7bdat
+*.xls
 *.xlsx
 *.zip
 
@@ -224,7 +229,7 @@ vignettes/*.pdf
 .Renviron
 
 # pkgdown site
-# SSB: The directory below is comment because default when generating documentation with Sphinx
+# SSB: The directory below is commented out because default when generating documentation with Sphinx
 #docs/
 
 # translation temp files
