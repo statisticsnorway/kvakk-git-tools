@@ -237,3 +237,15 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Blaise
+*.bdix
+*.bdbx
+*.bpkg
+*.mbpkg
+*.backup
+*.bmix
+*.msux
+*.usersettings
+
+
