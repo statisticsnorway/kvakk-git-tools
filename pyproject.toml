@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kvakk-git-tools"
-version = "1.0.2"
+version = "1.0.3"
 description = "Recommended git config and git scripts for Statistics Norway."
 authors = ["Arne Sørli <81353974+arneso-ssb@users.noreply.github.com>"]
 license = "MIT"
@@ -9,7 +9,6 @@ packages = [{include = "kvakk_git_tools"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-wheel = "^0.38.4"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["d"], version = "^22.8.0"}
@@ -19,8 +18,7 @@ flake8-bandit = "^4.1.1"
 flake8-bugbear = "^22.9.23"
 flake8-docstrings = "^1.6.0"
 isort = "^5.10.1"
-mypy = "^0.971"
-pep8-naming = "^0.13.2"
+mypy = "^0.991"
 pre-commit = "^2.20.0"
 pre-commit-hooks = "^4.3.0"
 pylint = "^2.15.3"

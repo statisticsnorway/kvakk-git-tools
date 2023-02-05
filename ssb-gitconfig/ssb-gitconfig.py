@@ -9,7 +9,7 @@ If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 import argparse
 import getpass
@@ -84,9 +84,9 @@ class Platform:
         my_os = platform.system()
         if my_os == "Linux":
             self.linux = True
-        if my_os == "Windows":
+        elif my_os == "Windows":
             self.windows = True
-        if my_os == "Darwin":
+        elif my_os == "Darwin":
             self.mac = True
 
         jupyter_spec = os.environ.get("JUPYTER_IMAGE_SPEC")
@@ -109,18 +109,20 @@ class Platform:
         )
 
     def name(self) -> PlatformName:
-        if self.prod_zone and self.linux:
-            return PlatformName.PROD_LINUX
-        if self.prod_zone and self.windows and self.citrix:
-            return PlatformName.PROD_WINDOWS_CITRIX
-        if self.prod_zone and self.windows and not self.citrix:
-            return PlatformName.PROD_WINDOWS_VDI
+        if self.prod_zone:
+            if self.linux:
+                return PlatformName.PROD_LINUX
+            if self.windows:
+                if self.citrix:
+                    return PlatformName.PROD_WINDOWS_CITRIX
+                return PlatformName.PROD_WINDOWS_VDI
         if self.dapla:
             return PlatformName.DAPLA
-        if self.adm_zone and self.windows:
-            return PlatformName.ADM_WINDOWS
-        if self.adm_zone and self.mac:
-            return PlatformName.ADM_MAC
+        if self.adm_zone:
+            if self.windows:
+                return PlatformName.ADM_WINDOWS
+            if self.mac:
+                return PlatformName.ADM_MAC
         return PlatformName.UNKNOWN
 
     def is_unsupported(self) -> bool:
@@ -130,9 +132,7 @@ class Platform:
             PlatformName.ADM_MAC,
             PlatformName.UNKNOWN,
         ]
-        if self.name() in unsupported:
-            return True
-        return False
+        return self.name() in unsupported
 
 
 class TempDir:
