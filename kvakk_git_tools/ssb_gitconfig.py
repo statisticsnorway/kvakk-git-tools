@@ -9,7 +9,7 @@ If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 import argparse
 import getpass
@@ -134,6 +134,9 @@ class Platform:
         ]
         return self.name() in unsupported
 
+    def is_supported(self) -> bool:
+        return not self.is_unsupported()
+
 
 class TempDir:
     """Context manager class for creating and cleaning up a temporary directory."""
@@ -208,13 +211,13 @@ def set_base_config(pl: Platform, test: bool) -> str:
         The recommended .gitattributes
     """
     temp_dir = Path.home() / "temp-ssb-gitconfig"
-    config_dir = temp_dir / "kvakk-git-tools" / "recommended"
+    config_dir = temp_dir / "kvakk-git-tools" / "kvakk_git_tools" / "recommended"
     dst = Path().home() / ".gitconfig"
     src = config_dir / f"gitconfig-{pl.name().value}"
     if test:
         src = config_dir / "gitconfig-dapla"
 
-    options = []
+    options = ["--branch", "v1.0.3"]
     prod_zone_windows = pl.name() is PlatformName.PROD_WINDOWS_CITRIX
     prod_zone_linux = pl.name() is PlatformName.PROD_LINUX
     if prod_zone_windows or prod_zone_linux:
@@ -222,8 +225,8 @@ def set_base_config(pl: Platform, test: bool) -> str:
 
     cmd = (
         ["git"]
-        + options
         + ["clone", "https://github.com/statisticsnorway/kvakk-git-tools.git"]
+        + options
     )
     print("Get recommended gitconfigs by cloning repo...")
 
@@ -291,7 +294,7 @@ def check_python_version() -> None:
         sys.exit(1)
 
 
-if __name__ == "__main__":
+def run() -> None:
     check_python_version()
 
     parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__)
@@ -304,6 +307,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.version:
-        print(f"ssb-gitconfig.py version: {__version__}")
+        print(f"ssb_gitconfig version: {__version__}")
     else:
         main(args.test)
+
+
+if __name__ == "__main__":
+    run()

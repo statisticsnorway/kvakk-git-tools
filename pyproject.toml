@@ -5,13 +5,16 @@ description = "Recommended git config and git scripts for Statistics Norway."
 authors = ["Arne Sørli <81353974+arneso-ssb@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "kvakk_git_tools"}]
+packages = [{ include = "kvakk_git_tools" }]
+
+[tool.poetry.scripts]
+kvakk-git-tools = "kvakk_git_tools.ssb_gitconfig:run"
 
 [tool.poetry.dependencies]
 python = "^3.10"
 
 [tool.poetry.group.dev.dependencies]
-black = {extras = ["d"], version = "^22.8.0"}
+black = { extras = ["d"], version = "^22.8.0" }
 darglint = "^1.8.1"
 flake8 = "^5.0.4"
 flake8-bandit = "^4.1.1"
