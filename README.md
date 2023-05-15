@@ -74,3 +74,19 @@ poetry run flake8
 poetry run mypy .
 poetry run pylint ssb-gitconfig/ssb-gitconfig.py
 ```
+
+### Bumping version
+
+Use `make` to bump the _patch_, _minor_ version or _major_ version before creating a pull request to the `main` GIT
+branch.
+
+You can use either `bump-version-patch`, `bump-version-minor`, or `bump-version-major`.
+Bumping must be done with a clean git working space, and automatically commits with the new version number.
+
+Then just run `git push origin --tags` to push the changes and trigger the release process.
+
+### Building and releasing
+
+Before merging your changes into the `main` branch, make sure you have bumped the version like outlined above.
+
+An automatic release process will build _kvakk-git-tools_ and release a new version of the package to **pypi.org** automatically.
