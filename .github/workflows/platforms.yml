@@ -24,4 +24,4 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run script
         run: |
-          python kvakk_git_tools/ssb-gitconfig.py --test
+          python kvakk_git_tools/ssb_gitconfig.py --test
