@@ -5,7 +5,7 @@ from kvakk_git_tools.ssb_gitconfig import Platform, PlatformName
 from kvakk_git_tools.validate_ssb_gitconfig import _validate_platform_git_config
 
 
-def _mock_platform_name(platform_name: PlatformName) -> MagicMock:
+def _mock_platform_name(platform_name: PlatformName) -> Platform:
     """This helper function returns a Platform object with a mocked name."""
     detected_platform = Platform()
     detected_platform.name = MagicMock(return_value=platform_name)
