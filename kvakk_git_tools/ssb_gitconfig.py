@@ -217,7 +217,7 @@ def set_base_config(pl: Platform, test: bool) -> str:
     if test:
         src = config_dir / "gitconfig-dapla"
 
-    options = ["--branch", "v1.0.3"]
+    options = ["--branch", "v2.0.0"]
     prod_zone_windows = pl.name() is PlatformName.PROD_WINDOWS_CITRIX
     prod_zone_linux = pl.name() is PlatformName.PROD_LINUX
     if prod_zone_windows or prod_zone_linux:
