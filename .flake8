@@ -1,6 +1,8 @@
 [flake8]
 select = B,B9,C,D,DAR,E,F,N,RST,S,W
-extend-ignore = D102,D103,D105,D107,D210,E203,E501,RST201,RST203,RST301,S404,S603,W503
+extend-ignore = D102,D103,D105,D107,D210,E203,E501,RST201,RST203,RST301,S404,S603,W503,B950
 max-line-length = 88
 max-complexity = 15
 docstring-convention = google
+exclude = */__init__.py
+per-file-ignores = tests/*:S101
