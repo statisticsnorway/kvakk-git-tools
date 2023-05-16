@@ -24,6 +24,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional, Tuple
 
+import pkg_resources
+
 
 def ping(host: str) -> bool:
     """Returns True if host responds to a ping request."""
@@ -294,6 +296,57 @@ def check_python_version() -> None:
         sys.exit(1)
 
 
+def kvakk_git_tools_package_installed() -> bool:
+    """Checks if the kvakk_git_tools package is installed on the system.
+
+    Returns:
+        bool: True if the package is installed, False otherwise.
+    """
+    try:
+        pkg_resources.get_distribution("kvakk_git_tools")
+        return True
+    except pkg_resources.DistributionNotFound:
+        return False
+
+
+def enable_additional_package_arguments(
+    parser: argparse.ArgumentParser, enable: bool
+) -> None:
+    """Enables additional package arguments in the given ArgumentParser object.
+
+    Args:
+        parser (argparse.ArgumentParser): The ArgumentParser object.
+        enable (bool): Indicates whether to enable the additional arguments.
+    """
+    if enable:
+        parser.add_argument(
+            "--validate",
+            action="store_true",
+            help="Validates SSB gitconfig for your current platform",
+        )
+
+
+def parse_optional_validation_argument(validate: bool):
+    """Parses the optional validation argument and performs SSB Git configuration validation.
+
+    Args:
+        validate (bool): Indicates whether to perform the validation.
+    """
+    if validate:
+        from kvakk_git_tools.validate_ssb_gitconfig import validate_git_config
+
+        if validate_git_config():
+            print("Git configuration follows SSB recommendations.")
+            exit(0)
+        else:
+            print(
+                "WARNING: Git configuration does not follow SSB recommendations."
+                "\nThis can lead to sensitive information being pushed to Git."
+                "\nYou can fix this by running: 'kvakk-git-tools' in your terminal."
+            )
+            exit(1)
+
+
 def run() -> None:
     check_python_version()
 
@@ -304,7 +357,13 @@ def run() -> None:
     parser.add_argument(
         "--version", action="store_true", help="print he version number of the script"
     )
+    package_installed = kvakk_git_tools_package_installed()
+    enable_additional_package_arguments(parser, package_installed)
+
     args = parser.parse_args()
+
+    if package_installed:
+        parse_optional_validation_argument(args.validate)
 
     if args.version:
         print(f"ssb_gitconfig version: {__version__}")
