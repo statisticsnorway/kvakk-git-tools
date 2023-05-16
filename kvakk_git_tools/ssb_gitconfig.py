@@ -9,7 +9,7 @@ If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
 
-__version__ = "2.1.0"
+__version__ = "2.1.1"
 
 import argparse
 import getpass
@@ -219,7 +219,7 @@ def set_base_config(pl: Platform, test: bool) -> str:
     if test:
         src = config_dir / "gitconfig-dapla"
 
-    options = ["--branch", "2.1.0"]
+    options = ["--branch", "2.1.1"]
     prod_zone_windows = pl.name() is PlatformName.PROD_WINDOWS_CITRIX
     prod_zone_linux = pl.name() is PlatformName.PROD_LINUX
     if prod_zone_windows or prod_zone_linux:
@@ -235,7 +235,7 @@ def set_base_config(pl: Platform, test: bool) -> str:
     # Fix for python < 3.7, using stdout.
     # Use capture_output=true instead of stdout when python >= 3.7
     with TempDir(temp_dir):
-        subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.PIPE, check=True)
+        subprocess.run(cmd, cwd=temp_dir, stderr=subprocess.DEVNULL, check=True)
         dst.write_bytes(src.read_bytes())
 
         # Replace template username with real username
