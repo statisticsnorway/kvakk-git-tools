@@ -1,6 +1,8 @@
 """Test module for validate_ssb_gitconfig."""
 from unittest.mock import MagicMock
 
+import pytest
+
 from kvakk_git_tools.ssb_gitconfig import Platform, PlatformName
 from kvakk_git_tools.validate_ssb_gitconfig import _validate_platform_git_config
 
@@ -67,4 +69,28 @@ def test_validate_git_config_no_file() -> None:
     """
     detected_platform = _mock_platform_name(PlatformName.DAPLA)
     git_config_path = "fake/file/path/no_file.fake"
-    assert not _validate_platform_git_config(git_config_path, detected_platform)
+    with pytest.raises(FileExistsError) as fnf:
+        _validate_platform_git_config(git_config_path, detected_platform)
+    assert str(fnf.value) == "File: fake/file/path/no_file.fake does not exist!"
+
+
+def test_verify_configuration_difference_fully_configured() -> None:
+    """Test case to verify that the fully configured Git file returns True."""
+    detected_platform = _mock_platform_name(PlatformName.DAPLA)
+    assert (
+        _validate_platform_git_config(
+            "tests/test_files/fully_configured_git.test", detected_platform
+        )
+        is True
+    )
+
+
+def test_verify_configuration_difference_partial_user_configuration() -> None:
+    """Test case to verify that a partially configured Git file returns False."""
+    detected_platform = _mock_platform_name(PlatformName.DAPLA)
+    assert (
+        _validate_platform_git_config(
+            "tests/test_files/partial_user_configuration.test", detected_platform
+        )
+        is False
+    )

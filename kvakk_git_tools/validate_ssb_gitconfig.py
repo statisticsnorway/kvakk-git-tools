@@ -38,7 +38,7 @@ def _validate_platform_git_config(
         return False
 
     if not Path(git_config_path).is_file():
-        return False
+        raise FileExistsError(f"File: {git_config_path} does not exist!")
 
     ssb_recommended_config_file_path = (
         f"recommended/gitconfig-{detected_platform.name().value}"
@@ -53,6 +53,29 @@ def _validate_platform_git_config(
     with open(git_config_path) as local_config_file:
         local_config_contents = local_config_file.read()
 
-    ssb_config_lines = set(ssb_config_contents_str.split("\n"))
-    local_config_lines = set(local_config_contents.split("\n"))
-    return ssb_config_lines == local_config_lines
+    ssb_config_lines = ssb_config_contents_str.split("\n")
+    local_config_lines = local_config_contents.split("\n")
+    if ssb_config_lines == local_config_lines:
+        return True
+    else:
+        rest = [line for line in local_config_lines if line not in ssb_config_lines]
+        return _verify_configuration_difference(rest)
+
+
+def _verify_configuration_difference(rest: list[str]) -> bool:
+    """Checks that the difference in configuration is only [user], name, and email.
+
+    Args:
+        rest (list[str]): A list containing the elements to check.
+
+    Returns:
+        bool: True if the difference contains only [user], name, and email settings. False otherwise.
+    """
+    if len(rest) != 3:
+        return False
+
+    # Check that the rest of the configuration contains [user], name, and email in the expected order
+    if "[user]" in rest[0] and "\tname =" in rest[1] and "\temail =" in rest[2]:
+        return True
+
+    return False
