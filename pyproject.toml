@@ -26,6 +26,7 @@ pre-commit = "^2.20.0"
 pre-commit-hooks = "^4.3.0"
 pylint = "^2.15.3"
 bump2version = "*"
+pytest = "^7.3.1"
 
 [build-system]
 requires = ["poetry-core"]
