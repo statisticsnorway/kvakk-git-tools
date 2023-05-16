@@ -312,7 +312,7 @@ def kvakk_git_tools_package_installed() -> bool:
 def enable_additional_package_arguments(
     parser: argparse.ArgumentParser, enable: bool
 ) -> None:
-    """Enables additional package arguments in the given ArgumentParser object.
+    """Enables packages specific arguments in the given ArgumentParser object.
 
     Args:
         parser (argparse.ArgumentParser): The ArgumentParser object.
