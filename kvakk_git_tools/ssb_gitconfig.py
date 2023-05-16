@@ -235,7 +235,7 @@ def set_base_config(pl: Platform, test: bool) -> str:
     # Fix for python < 3.7, using stdout.
     # Use capture_output=true instead of stdout when python >= 3.7
     with TempDir(temp_dir):
-        subprocess.run(cmd, cwd=temp_dir, stdout=subprocess.DEVNULL, check=True)
+        subprocess.run(cmd, cwd=temp_dir, stderr=subprocess.DEVNULL, check=True)
         dst.write_bytes(src.read_bytes())
 
         # Replace template username with real username
