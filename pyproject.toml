@@ -14,19 +14,19 @@ kvakk-git-tools = "kvakk_git_tools.ssb_gitconfig:run"
 python = "^3.10"
 
 [tool.poetry.group.dev.dependencies]
-black = { extras = ["d"], version = "^22.8.0" }
-darglint = "^1.8.1"
-flake8 = "^5.0.4"
-flake8-bandit = "^4.1.1"
-flake8-bugbear = "^22.9.23"
-flake8-docstrings = "^1.6.0"
-isort = "^5.10.1"
-mypy = "^0.991"
-pre-commit = "^2.20.0"
-pre-commit-hooks = "^4.3.0"
-pylint = "^2.15.3"
+black = { extras = ["d"], version = ">=22.8.0" }
+darglint = ">=1.8.1"
+flake8 = ">=5.0.4"
+flake8-bandit = ">=4.1.1"
+flake8-bugbear = ">=22.9.23"
+flake8-docstrings = ">=1.6.0"
+isort = ">=5.10.1"
+mypy = ">=1.0.0"
+pre-commit = ">=2.20.0"
+pre-commit-hooks = ">=4.3.0"
+pylint = ">=2.15.3"
 bump2version = "*"
-pytest = "^7.3.1"
+pytest = ">=7.3.1"
 
 [build-system]
 requires = ["poetry-core"]
