@@ -17,6 +17,7 @@
 *.xls
 *.xlsx
 *.zip
+*.rda
 
 # Blaise
 *.bdix
