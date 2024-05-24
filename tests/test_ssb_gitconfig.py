@@ -1,4 +1,5 @@
 """Test module for ssb_gitconfig."""
+
 import sys
 from unittest.mock import Mock, patch
 
