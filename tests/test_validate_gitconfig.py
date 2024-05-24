@@ -1,4 +1,5 @@
 """Test module for validate_ssb_gitconfig."""
+
 from unittest.mock import MagicMock
 
 import pytest
