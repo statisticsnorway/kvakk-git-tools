@@ -91,8 +91,10 @@ class Platform:
         elif my_os == "Darwin":
             self.mac = True
 
-        jupyter_spec = os.environ.get("JUPYTER_IMAGE_SPEC")
-        if jupyter_spec is not None and "dapla" in jupyter_spec:
+        if (
+            os.environ.get("DAPLA_REGION") == "DAPLA_LAB"
+            or os.environ.get("DAPLA_REGION") == "BIP"
+        ):
             self.dapla = True
 
         if not self.dapla:
