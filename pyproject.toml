@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kvakk-git-tools"
-version = "2.2.2"
+version = "2.2.3"
 description = "Recommended git config and git scripts for Statistics Norway."
 authors = ["Arne Sørli <81353974+arneso-ssb@users.noreply.github.com>"]
 license = "MIT"
