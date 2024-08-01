@@ -1,6 +1,6 @@
 """This module provides functions for validating SSB Git configuration."""
 
-from importlib.resources import files
+from importlib_resources import files
 from pathlib import Path
 
 from kvakk_git_tools.ssb_gitconfig import Platform

@@ -21,7 +21,7 @@ import subprocess
 import sys
 from datetime import datetime
 from enum import Enum
-from importlib.metadata import distribution, PackageNotFoundError
+from importlib_metadata import distribution, PackageNotFoundError
 from pathlib import Path
 from typing import Optional, Tuple
 
