@@ -9,7 +9,7 @@ If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
 
-__version__ = "2.2.1"
+__version__ = "2.2.2"
 
 import argparse
 import getpass
@@ -21,10 +21,9 @@ import subprocess
 import sys
 from datetime import datetime
 from enum import Enum
+from importlib.metadata import distribution, PackageNotFoundError
 from pathlib import Path
 from typing import Optional, Tuple
-
-import pkg_resources
 
 
 def ping(host: str) -> bool:
@@ -305,9 +304,9 @@ def kvakk_git_tools_package_installed() -> bool:
         bool: True if the package is installed, False otherwise.
     """
     try:
-        pkg_resources.get_distribution("kvakk_git_tools")
+        distribution("kvakk_git_tools")
         return True
-    except pkg_resources.DistributionNotFound:
+    except PackageNotFoundError:
         return False
 
 

@@ -1,8 +1,7 @@
 """This module provides functions for validating SSB Git configuration."""
 
+from importlib.resources import files
 from pathlib import Path
-
-import pkg_resources
 
 from kvakk_git_tools.ssb_gitconfig import Platform
 
@@ -44,8 +43,8 @@ def _validate_platform_git_config(
         f"recommended/gitconfig-{detected_platform.name().value}"
     )
 
-    with pkg_resources.resource_stream(
-        __package__, ssb_recommended_config_file_path
+    with files(__package__).joinpath(ssb_recommended_config_file_path).open(
+        "rb"
     ) as ssb_config_file:
         ssb_config_contents = ssb_config_file.read()
         ssb_config_contents_str = ssb_config_contents.decode("utf-8")
