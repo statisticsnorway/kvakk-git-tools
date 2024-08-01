@@ -302,9 +302,7 @@ def kvakk_git_tools_package_installed() -> bool:
     Returns:
         bool: True if the package is installed, False otherwise.
     """
-
-    # If python version is older than 3.10 use stdlib function
-    # which is now deprecated.
+    # If python version is older than 3.10 use stdlib module which is now deprecated.
     if sys.version_info.major == 3 and sys.version_info.minor < 10:
         import pkg_resources
 
@@ -314,7 +312,7 @@ def kvakk_git_tools_package_installed() -> bool:
         except pkg_resources.DistributionNotFound:
             return False
     else:
-        from importlib.metadata import distribution, PackageNotFoundError
+        from importlib.metadata import PackageNotFoundError, distribution
 
         try:
             distribution("kvakk_git_tools")

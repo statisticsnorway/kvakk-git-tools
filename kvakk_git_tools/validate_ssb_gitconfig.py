@@ -1,7 +1,7 @@
 """This module provides functions for validating SSB Git configuration."""
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from kvakk_git_tools.ssb_gitconfig import Platform
 
@@ -43,8 +43,7 @@ def _validate_platform_git_config(
         f"recommended/gitconfig-{detected_platform.name().value}"
     )
 
-    # If python version is older than 3.10 use stdlib function
-    # which is now deprecated.
+    # If python version is older than 3.10 use stdlib module which is now deprecated.
     if sys.version_info.major == 3 and sys.version_info.minor < 10:
         import pkg_resources
 
