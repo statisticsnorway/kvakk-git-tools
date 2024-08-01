@@ -21,7 +21,6 @@ import subprocess
 import sys
 from datetime import datetime
 from enum import Enum
-from importlib_metadata import distribution, PackageNotFoundError
 from pathlib import Path
 from typing import Optional, Tuple
 
@@ -303,11 +302,25 @@ def kvakk_git_tools_package_installed() -> bool:
     Returns:
         bool: True if the package is installed, False otherwise.
     """
-    try:
-        distribution("kvakk_git_tools")
-        return True
-    except PackageNotFoundError:
-        return False
+
+    # If python version is older than 3.10 use stdlib function
+    # which is now deprecated.
+    if sys.version_info.major == 3 and sys.version_info.minor < 10:
+        import pkg_resources
+
+        try:
+            pkg_resources.get_distribution("kvakk_git_tools")
+            return True
+        except pkg_resources.DistributionNotFound:
+            return False
+    else:
+        from importlib.metadata import distribution, PackageNotFoundError
+
+        try:
+            distribution("kvakk_git_tools")
+            return True
+        except PackageNotFoundError:
+            return False
 
 
 def enable_additional_package_arguments(

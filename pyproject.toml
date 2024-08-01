@@ -12,9 +12,6 @@ kvakk-git-tools = "kvakk_git_tools.ssb_gitconfig:run"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-# Need these stdlib backports to support older python versions
-importlib-metadata = "^8.2.0"
-importlib-resources = "^6.4.0"
 
 [tool.poetry.group.dev.dependencies]
 black = { extras = ["d"], version = ">=22.8.0" }
