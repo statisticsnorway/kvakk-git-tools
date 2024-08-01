@@ -9,7 +9,7 @@ If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
 
-__version__ = "2.2.3"
+__version__ = "2.2.4"
 
 import argparse
 import getpass
