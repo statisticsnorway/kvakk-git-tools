@@ -9,7 +9,7 @@ If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
 
-__version__ = "2.2.1"
+__version__ = "2.2.4"
 
 import argparse
 import getpass
@@ -23,8 +23,6 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Optional, Tuple
-
-import pkg_resources
 
 
 def ping(host: str) -> bool:
@@ -221,7 +219,7 @@ def set_base_config(pl: Platform, test: bool) -> str:
     if test:
         src = config_dir / "gitconfig-dapla"
 
-    options = ["--branch", "2.2.1"]
+    options = ["--branch", __version__]
     prod_zone_windows = pl.name() is PlatformName.PROD_WINDOWS_CITRIX
     prod_zone_linux = pl.name() is PlatformName.PROD_LINUX
     if prod_zone_windows or prod_zone_linux:
@@ -304,11 +302,23 @@ def kvakk_git_tools_package_installed() -> bool:
     Returns:
         bool: True if the package is installed, False otherwise.
     """
-    try:
-        pkg_resources.get_distribution("kvakk_git_tools")
-        return True
-    except pkg_resources.DistributionNotFound:
-        return False
+    # If python version is older than 3.10 use stdlib module which is now deprecated.
+    if sys.version_info.major == 3 and sys.version_info.minor < 10:
+        import pkg_resources
+
+        try:
+            pkg_resources.get_distribution("kvakk_git_tools")
+            return True
+        except pkg_resources.DistributionNotFound:
+            return False
+    else:
+        from importlib.metadata import PackageNotFoundError, distribution
+
+        try:
+            distribution("kvakk_git_tools")
+            return True
+        except PackageNotFoundError:
+            return False
 
 
 def enable_additional_package_arguments(
