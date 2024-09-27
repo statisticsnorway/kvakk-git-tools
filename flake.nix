@@ -18,6 +18,7 @@
           name = "ssb-project-cli";
           packages =
             (with pkgs; [
+              bump2version
               nixd
               python310
               python311
