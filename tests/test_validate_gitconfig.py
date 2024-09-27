@@ -39,8 +39,10 @@ def test_validate_git_config_equal() -> None:
 
 
 def test_validate_git_config_with_extra_fields() -> None:
-    """Test that a git configuration with additional fields on top
-    of the recommended setup for a specific platform is considered valid by `validate_platform_git_config()`
+    """Test the functionality of `validate_platform_git_config()` on a configuration file with extra fields.
+
+    Test that a git configuration with additional fields on top
+    of the recommended setup for a specific platform is considered valid by `validate_platform_git_config()`.
     """
     detected_platform = _mock_platform_name(PlatformName.DAPLA)
     git_config_path = "tests/test_files/config_with_extra.test"

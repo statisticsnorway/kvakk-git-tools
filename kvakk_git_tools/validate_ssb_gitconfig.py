@@ -95,8 +95,11 @@ def _check_config(
     section: str,
     key: str,
 ) -> bool:
-    """Ensure that the section and key exist in the configuraton
-    and that the value equals the expected value."""
+    """Check corectness of configuration.
+
+    Ensure that the `section` and `key` exist in the configuraton
+    and that the value equals the expected value.
+    """
     if section not in actual_conf:
         return False
     if key not in actual_conf[section]:
