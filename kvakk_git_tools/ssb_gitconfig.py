@@ -91,14 +91,10 @@ class Platform:
         elif my_os == "Darwin":
             self.mac = True
 
-        if (
-            os.environ.get("DAPLA_REGION") == "DAPLA_LAB"
-        ):
+        if os.environ.get("DAPLA_REGION") == "DAPLA_LAB":
             self.dapla_lab = True
-            
-        elif (
-            os.environ.get("DAPLA_REGION") == "BIP"
-        ):
+
+        elif os.environ.get("DAPLA_REGION") == "BIP":
             self.dapla = True
 
         if not self.dapla or self.dapla_lab:
