@@ -7,7 +7,7 @@
 [credential]
 	helper = cache --timeout=86400
 [diff "ipynb"]
-	textconv = nbstripout
+	textconv = nbstripout -t
 [fetch]
 	prune = true
 [filter "nbstripout"]
