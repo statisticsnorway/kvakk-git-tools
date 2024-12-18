@@ -7,7 +7,7 @@
 [credential]
 	helper = cache --timeout=86400
 [diff "ipynb"]
-	textconv = '/opt/conda/bin/python3' -m nbstripout -t
+	textconv = nbstripout
 [fetch]
 	prune = true
 [filter "nbstripout"]
