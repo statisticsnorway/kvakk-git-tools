@@ -61,6 +61,7 @@ class PlatformName(Enum):
     """Enum representing the platform names. Used in the Platform class."""
 
     DAPLA = "dapla"
+    DAPLA_LAB = "dapla-lab"
     PROD_LINUX = "prod-linux"
     PROD_WINDOWS_CITRIX = "prod-windows-citrix"
     PROD_WINDOWS_VDI = "prod-windows-vdi"
@@ -76,6 +77,7 @@ class Platform:
         self.linux = False
         self.windows = False
         self.dapla = False
+        self.dapla_lab = False
         self.prod_zone = False
         self.adm_zone = False
         self.citrix = False
@@ -91,11 +93,15 @@ class Platform:
 
         if (
             os.environ.get("DAPLA_REGION") == "DAPLA_LAB"
-            or os.environ.get("DAPLA_REGION") == "BIP"
+        ):
+            self.dapla_lab = True
+            
+        elif (
+            os.environ.get("DAPLA_REGION") == "BIP"
         ):
             self.dapla = True
 
-        if not self.dapla:
+        if not self.dapla or self.dapla_lab:
             self.prod_zone = ping("sl-jupyter-p.ssb.no")
             if not self.prod_zone:
                 self.adm_zone = ping("aw-dc04.ssb.no")
@@ -106,8 +112,8 @@ class Platform:
         return (
             f"{self.name().name}(linux={self.linux}, "
             f"windows={self.windows}, mac={self.mac}, dapla={self.dapla}, "
-            f"adm_zone={self.adm_zone}, prod_zone={self.prod_zone}, "
-            f"citrix={self.citrix})"
+            f"dapla_lab={self.dapla_lab}, adm_zone={self.adm_zone}, "
+            f"prod_zone={self.prod_zone}, citrix={self.citrix})"
         )
 
     def name(self) -> PlatformName:
@@ -120,6 +126,8 @@ class Platform:
                 return PlatformName.PROD_WINDOWS_VDI
         if self.dapla:
             return PlatformName.DAPLA
+        if self.dapla_lab:
+            return PlatformName.DAPLA_LAB
         if self.adm_zone:
             if self.windows:
                 return PlatformName.ADM_WINDOWS
