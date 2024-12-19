@@ -1,0 +1,20 @@
+[color]
+	ui = auto
+[core]
+	autocrlf = input
+	editor = nano
+	eol = lf
+[credential]
+	helper = cache --timeout=86400
+[diff "ipynb"]
+	textconv = nbstripout -t
+[fetch]
+	prune = true
+[filter "nbstripout"]
+	clean = nbstripout
+	extrakeys = metadata.kernelspec metadata.language_info.version cell.metadata.pycharm metadata.language_info.pygments_lexer metadata.language_info.codemirror_mode.version
+	smudge = cat
+[init]
+	defaultBranch = main
+[push]
+	default = current
