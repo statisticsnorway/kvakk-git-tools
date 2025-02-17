@@ -97,7 +97,7 @@ class Platform:
         elif os.environ.get("DAPLA_REGION") == "BIP":
             self.dapla = True
 
-        if self.dapla is False or self.dapla_lab is False:
+        if self.dapla is False and self.dapla_lab is False:
             self.prod_zone = ping("sl-jupyter-p.ssb.no")
             if not self.prod_zone:
                 self.adm_zone = ping("aw-dc04.ssb.no")
