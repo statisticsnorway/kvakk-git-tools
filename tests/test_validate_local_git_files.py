@@ -1,7 +1,8 @@
 """Test module for validate_ssb_gitignore."""
 
-from kvakk_git_tools.validate_ssb_local_git_files import _validate_local_git_files
 from pathlib import Path
+
+from kvakk_git_tools.validate_ssb_local_git_files import _validate_local_git_files
 
 
 def test_validate_git_config_equal() -> None:

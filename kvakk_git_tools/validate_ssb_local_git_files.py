@@ -14,7 +14,10 @@ def _read_local_git_file(gitignore_path: Path) -> list[str]:
     return lines
 
 
-def validate_local_git_files(cwd: Path = Path()) -> bool:
+empty_path: Path = Path()
+
+
+def validate_local_git_files(cwd: Path = empty_path) -> bool:
     """Validate the local Git files.
 
     Args:
