@@ -46,7 +46,8 @@ def _validate_local_git_files(gitignore_path: Path, gitattributes_path: Path) ->
     if sys.version_info.major == 3 and sys.version_info.minor < 10:
         import pkg_resources
 
-        relative_path = pkg_resources.resource_stream(__package__)
+        relative_path = pkg_resources.resource_string(__package__, "")
+        print(relative_path)
     else:
         from importlib.resources import files
 
