@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" This script sets the recommended .gitconfig for the detected platform.
+"""This script sets the recommended .gitconfig for the detected platform.
 
 The recommended base git configs are stored in the public git repository
 https://github.com/statisticsnorway/kvakk-git-tools.git. The script clones this
