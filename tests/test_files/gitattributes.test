@@ -1,0 +1,4 @@
+* text=auto eol=lf
+# Test comment
+*.ipynb filter=nbstripout
+*.ipynb diff=ipynb
