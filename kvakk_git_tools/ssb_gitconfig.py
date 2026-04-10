@@ -98,7 +98,7 @@ class Platform:
             self.dapla = True
 
         if self.dapla is False and self.dapla_lab is False:
-            self.prod_zone = ping("sl-jupyter-p.ssb.no")
+            self.prod_zone = ping("sl-jupyter-p1.ssb.no")
             if not self.prod_zone:
                 self.adm_zone = ping("aw-dc04.ssb.no")
             session_name = os.environ.get("SESSIONNAME")
