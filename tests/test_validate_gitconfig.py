@@ -4,7 +4,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kvakk_git_tools.ssb_gitconfig import Platform, PlatformName
+from kvakk_git_tools.ssb_gitconfig import Platform
+from kvakk_git_tools.ssb_gitconfig import PlatformName
 from kvakk_git_tools.validate_ssb_gitconfig import _validate_platform_git_config
 
 
@@ -31,9 +32,7 @@ def test_validate_git_config_equal() -> None:
     platform_enums = PlatformName.__members__.values()
     for platform_enum in platform_enums:
         detected_platform = _mock_platform_name(platform_enum)
-        git_config_path = (
-            f"src/kvakk_git_tools/recommended/gitconfig-{detected_platform.name().value}"
-        )
+        git_config_path = f"src/kvakk_git_tools/recommended/gitconfig-{detected_platform.name().value}"
 
         assert (
             _validate_platform_git_config(git_config_path, detected_platform)

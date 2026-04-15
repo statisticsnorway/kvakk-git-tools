@@ -33,6 +33,9 @@ def _validate_platform_git_config(
 
     Returns:
         bool: True if the local Git configuration file matches the recommended Git configuration file, False otherwise.
+
+    Raises:
+        FileExistsError: If the local Git configuration file does not exist.
     """
     if detected_platform.is_unsupported():
         return False
@@ -57,9 +60,11 @@ def _validate_platform_git_config(
     else:
         from importlib.resources import files
 
-        with files(__package__).joinpath(ssb_recommended_config_file_path).open(
-            "rb"
-        ) as ssb_config_file:
+        with (
+            files(__package__)
+            .joinpath(ssb_recommended_config_file_path)
+            .open("rb") as ssb_config_file
+        ):
             ssb_config.read_string(ssb_config_file.read().decode("utf-8"))
 
     with open(git_config_path, "r") as local_config_file:

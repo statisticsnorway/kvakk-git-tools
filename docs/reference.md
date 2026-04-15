@@ -16,11 +16,28 @@ kvakk\_git\_tools package
 =============================================================================
 
 
-kvakk\_git\_tools.functions module
------------------------------------------------------------------------------
+kvakk\_git\_tools.ssb\_gitconfig module
+---------------------------------------
 
-.. automodule:: kvakk_git_tools.functions
+.. automodule:: kvakk_git_tools.ssb_gitconfig
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
+
+kvakk\_git\_tools.validate\_ssb\_gitconfig module
+-------------------------------------------------
+
+.. automodule:: kvakk_git_tools.validate_ssb_gitconfig
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+kvakk\_git\_tools.validate\_ssb\_local\_git\_files module
+---------------------------------------------------------
+
+.. automodule:: kvakk_git_tools.validate_ssb_local_git_files
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 ```
