@@ -1,10 +1,12 @@
 """This module provides functions for validating SSB Git local files."""
 
 import sys
+
 from pathlib import Path
+from typing import List
 
 
-def _read_local_git_file(gitignore_path: Path) -> list[str]:
+def _read_local_git_file(gitignore_path: Path) -> List[str]:
     lines = []
     with open(gitignore_path, "r", encoding="UTF-8") as file:
         while True:

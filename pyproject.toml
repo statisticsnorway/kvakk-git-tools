@@ -6,7 +6,7 @@ authors = [{ name = "Nicholas Vallipuram Jaunsen", email = "nicholas.jaunsen@ssb
 maintainers = [{ name = "Statistics Norway, Data enablement Department (724)" }]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.6"
 dynamic = ["classifiers"]
 dependencies = [
 ]

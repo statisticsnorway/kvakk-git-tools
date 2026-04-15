@@ -1,8 +1,10 @@
 """This module provides functions for validating SSB Git configuration."""
 
+
 import configparser
 import sys
 from pathlib import Path
+from typing import Dict
 
 from kvakk_git_tools.ssb_gitconfig import Platform
 
@@ -59,12 +61,7 @@ def _validate_platform_git_config(
             ssb_config.read_string(ssb_config_file.read().decode("utf-8"))
     else:
         from importlib.resources import files
-
-        with (
-            files(__package__)
-            .joinpath(ssb_recommended_config_file_path)
-            .open("rb") as ssb_config_file
-        ):
+        with files(__package__).joinpath(ssb_recommended_config_file_path).open("rb") as ssb_config_file:
             ssb_config.read_string(ssb_config_file.read().decode("utf-8"))
 
     with open(git_config_path, "r") as local_config_file:
@@ -96,7 +93,7 @@ def _validate_platform_git_config(
 
 def _check_config(
     expected_value: str,
-    actual_conf: dict[str, dict[str, str]],
+    actual_conf: Dict[str, Dict[str, str]],
     section: str,
     key: str,
 ) -> bool:
