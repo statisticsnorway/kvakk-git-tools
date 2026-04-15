@@ -7,11 +7,10 @@ on:
       - master
   pull_request:
 
-permissions:
-  contents: read
-
 jobs:
   tests:
+    permissions:
+      contents: read
     name: ${{ matrix.session }} ${{ matrix.python }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -112,6 +111,8 @@ jobs:
           path: docs/_build
 
   coverage:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     needs: tests
     steps:
