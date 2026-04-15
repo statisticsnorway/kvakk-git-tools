@@ -1,7 +1,6 @@
 """This module provides functions for validating SSB Git local files."""
 
 import sys
-
 from pathlib import Path
 from typing import List
 

@@ -1,6 +1,5 @@
 """This module provides functions for validating SSB Git configuration."""
 
-
 import configparser
 import sys
 from pathlib import Path
@@ -61,7 +60,8 @@ def _validate_platform_git_config(
             ssb_config.read_string(ssb_config_file.read().decode("utf-8"))
     else:
         from importlib.resources import files
-        with files(__package__).joinpath(ssb_recommended_config_file_path).open("rb") as ssb_config_file:
+
+        with files(__package__).joinpath(ssb_recommended_config_file_path).open("rb") as ssb_config_file:  # fmt: skip
             ssb_config.read_string(ssb_config_file.read().decode("utf-8"))
 
     with open(git_config_path, "r") as local_config_file:

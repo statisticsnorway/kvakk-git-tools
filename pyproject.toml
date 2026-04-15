@@ -74,6 +74,9 @@ relative_files = true
 show_missing = true
 fail_under = 50
 
+[tool.black]
+target-version = ["py36"]
+
 [tool.deptry.per_rule_ignores]
 DEP001 = ["nox", "nox_poetry"]  # packages available by default
 

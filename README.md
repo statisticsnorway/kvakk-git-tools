@@ -94,26 +94,21 @@ poetry run pre-commit install
 You can do local linting with the following commands:
 
 ```shell
-poetry run flake8
-poetry run mypy .
-poetry run pylint kvakk_git_tools/*.py
+poetry run ruff check .
 ```
 
 ### Bumping version
 
-Use `make` to bump the _patch_, _minor_ version or _major_ version before creating a pull request to the `main` GIT
-branch.
-
-You can use either `bump-version-patch`, `bump-version-minor`, or `bump-version-major`.
-Bumping must be done with a clean git working space, and automatically commits with the new version number.
-
-Then just run `git push origin --tags` to push the changes and trigger the release process.
+Just change the version number in `pyproject.toml` to the new version number.
+Or use the command `poetry version` followed by `major`, `minor` or `patch`.
 
 ### Building and releasing
 
-Before merging your changes into the `main` branch, make sure you have bumped the version like outlined above.
+An automatic release process will build _kvakk-git-tools_ and release a new version of the package to either **pypi.org** or **test.pypi.org** automatically, when merging to the main branch.
 
-An automatic release process will build _kvakk-git-tools_ and release a new version of the package to **pypi.org** automatically.
+If the version number is *not* changed, it is published to TestPyPI.
+If the version number *is* changed, it is published to PyPI.
+
 
 ## Credits
 
