@@ -32,7 +32,7 @@ def test_validate_git_config_equal() -> None:
     for platform_enum in platform_enums:
         detected_platform = _mock_platform_name(platform_enum)
         git_config_path = (
-            f"kvakk_git_tools/recommended/gitconfig-{detected_platform.name().value}"
+            f"src/kvakk_git_tools/recommended/gitconfig-{detected_platform.name().value}"
         )
 
         assert (
@@ -62,7 +62,7 @@ def test_validate_git_config_not_equal(platform_name: str) -> None:
     """
     detected_platform = _mock_platform_name(platform_name)
     git_config_path = (
-        f"kvakk_git_tools/recommended/gitconfig-{PlatformName.PROD_LINUX.value}"
+        f"src/kvakk_git_tools/recommended/gitconfig-{PlatformName.PROD_LINUX.value}"
     )
     assert not _validate_platform_git_config(git_config_path, detected_platform)
 

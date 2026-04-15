@@ -1,0 +1,33 @@
+{
+  "template": "https://github.com/statisticsnorway/ssb-pypitemplate.git",
+  "commit": "dcc4de1788caf9123ee2a56ca3828eee8be383a8",
+  "checkout": "2026.2.24",
+  "context": {
+    "cookiecutter": {
+      "project_name": "kvakk-git-tools",
+      "package_name": "kvakk_git_tools",
+      "friendly_name": "KVAKK Git Tools",
+      "copyright_owner": "Statistics Norway",
+      "copyright_year": "2026",
+      "author": "Nicholas Vallipuram Jaunsen",
+      "email": "nicholas.jaunsen@ssb.no",
+      "github_organization": "statisticsnorway",
+      "version": "2.5.2",
+      "license": "MIT",
+      "development_status": "Development Status :: 5 - Production/Stable",
+      "code_quality_level": "Medium",
+      "dependency_manager_tool": "poetry",
+      "department_number": "724",
+      "_copy_without_render": [
+        "*.rst_t"
+      ],
+      "_jinja2_env_vars": {
+        "lstrip_blocks": true,
+        "trim_blocks": true
+      },
+      "_template": "https://github.com/statisticsnorway/ssb-pypitemplate.git",
+      "_commit": "dcc4de1788caf9123ee2a56ca3828eee8be383a8"
+    }
+  },
+  "directory": null
+}

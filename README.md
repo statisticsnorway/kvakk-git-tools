@@ -1,4 +1,28 @@
-# kvakk-git-tools
+# KVAKK Git Tools
+
+[![PyPI](https://img.shields.io/pypi/v/kvakk-git-tools.svg)][pypi status]
+[![Status](https://img.shields.io/pypi/status/kvakk-git-tools.svg)][pypi status]
+[![Python Version](https://img.shields.io/pypi/pyversions/kvakk-git-tools)][pypi status]
+[![License](https://img.shields.io/pypi/l/kvakk-git-tools)][license]
+
+[![Documentation](https://github.com/statisticsnorway/kvakk-git-tools/actions/workflows/docs.yml/badge.svg)][documentation]
+[![Tests](https://github.com/statisticsnorway/kvakk-git-tools/actions/workflows/tests.yml/badge.svg)][tests]
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=statisticsnorway_kvakk-git-tools&metric=coverage)][sonarcov]
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=statisticsnorway_kvakk-git-tools&metric=alert_status)][sonarquality]
+
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][pre-commit]
+[![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)][poetry]
+
+[pypi status]: https://pypi.org/project/kvakk-git-tools/
+[documentation]: https://statisticsnorway.github.io/kvakk-git-tools
+[tests]: https://github.com/statisticsnorway/kvakk-git-tools/actions?workflow=Tests
+[sonarcov]: https://sonarcloud.io/summary/overall?id=statisticsnorway_kvakk-git-tools
+[sonarquality]: https://sonarcloud.io/summary/overall?id=statisticsnorway_kvakk-git-tools
+[pre-commit]: https://github.com/pre-commit/pre-commit
+[black]: https://github.com/psf/black
+[poetry]: https://python-poetry.org/
 
 Repo for sharing recommended git config and git scripts in Statistics Norway.
 
@@ -90,3 +114,19 @@ Then just run `git push origin --tags` to push the changes and trigger the relea
 Before merging your changes into the `main` branch, make sure you have bumped the version like outlined above.
 
 An automatic release process will build _kvakk-git-tools_ and release a new version of the package to **pypi.org** automatically.
+
+## Credits
+
+This project was generated from [Statistics Norway]'s [SSB PyPI Template].
+
+[statistics norway]: https://www.ssb.no/en
+[pypi]: https://pypi.org/
+[ssb pypi template]: https://github.com/statisticsnorway/ssb-pypitemplate
+[file an issue]: https://github.com/statisticsnorway/kvakk-git-tools/issues
+[pip]: https://pip.pypa.io/
+
+<!-- github-only -->
+
+[license]: https://github.com/statisticsnorway/kvakk-git-tools/blob/main/LICENSE
+[contributor guide]: https://github.com/statisticsnorway/kvakk-git-tools/blob/main/CONTRIBUTING.md
+[reference guide]: https://statisticsnorway.github.io/kvakk-git-tools/reference.html
