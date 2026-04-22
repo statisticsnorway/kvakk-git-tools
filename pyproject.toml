@@ -1,6 +1,6 @@
 [project]
 name = "kvakk-git-tools"
-version = "2.5.2"
+version = "2.6.0"
 description = "Recommended git config and git scripts for Statistics Norway."
 authors = [{ name = "Nicholas Vallipuram Jaunsen", email = "nicholas.jaunsen@ssb.no" }]
 maintainers = [{ name = "Statistics Norway, Data enablement Department (724)" }]
