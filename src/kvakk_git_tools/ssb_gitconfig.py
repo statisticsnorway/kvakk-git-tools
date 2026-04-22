@@ -22,7 +22,8 @@ import sys
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
+from typing import Tuple
 
 
 def ping(host: str) -> bool:
@@ -229,11 +230,12 @@ def set_base_config(pl: Platform, test: bool) -> str:
     if prod_zone_windows or prod_zone_linux:
         options = ["-c", "http.sslVerify=False"]
 
-    cmd = (
-        ["git"]
-        + ["clone", "https://github.com/statisticsnorway/kvakk-git-tools.git"]
-        + options
-    )
+    cmd = [
+        "git",
+        "clone",
+        "https://github.com/statisticsnorway/kvakk-git-tools.git",
+        *options,
+    ]
     print("Get recommended gitconfigs by cloning repo...")
 
     # Fix for python < 3.7, using stdout.
@@ -316,7 +318,8 @@ def kvakk_git_tools_package_installed() -> bool:
         except pkg_resources.DistributionNotFound:
             return False
     else:
-        from importlib.metadata import PackageNotFoundError, distribution
+        from importlib.metadata import PackageNotFoundError
+        from importlib.metadata import distribution
 
         try:
             distribution("kvakk_git_tools")
@@ -331,8 +334,8 @@ def enable_additional_package_arguments(
     """Enables packages specific arguments in the given ArgumentParser object.
 
     Args:
-        parser (argparse.ArgumentParser): The ArgumentParser object.
-        enable (bool): Indicates whether to enable the additional arguments.
+        parser: The ArgumentParser object.
+        enable: Indicates whether to enable the additional arguments.
     """
     if enable:
         parser.add_argument(
@@ -346,7 +349,7 @@ def parse_optional_validation_argument(validate: bool):
     """Parses the optional validation argument and performs SSB Git configuration validation.
 
     Args:
-        validate (bool): Indicates whether to perform the validation.
+        validate: Indicates whether to perform the validation.
     """
     if validate:
         from kvakk_git_tools.validate_ssb_gitconfig import validate_git_config

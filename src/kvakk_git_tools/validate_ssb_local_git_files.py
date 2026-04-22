@@ -2,12 +2,16 @@
 
 import sys
 from pathlib import Path
+from typing import List
 
 
-def _read_local_git_file(gitignore_path: Path) -> list[str]:
+def _read_local_git_file(gitignore_path: Path) -> List[str]:
     lines = []
     with open(gitignore_path, "r", encoding="UTF-8") as file:
-        while line := file.readline():
+        while True:
+            line = file.readline()
+            if not line:
+                break
             stripped_line = line.rstrip()
             if not stripped_line.startswith("#"):
                 lines.append(stripped_line)
@@ -23,7 +27,7 @@ def validate_local_git_files(cwd: Path = empty_path) -> bool:
     Args:
         cwd: The path to the current working directory in which to find the local git files.
 
-    Returns
+    Returns:
         bool: True if the local git files are valid, False otherwise. See: `_validate_local_git_files`
     """
     gitignore_path = cwd.joinpath(".gitignore")
@@ -35,10 +39,14 @@ def _validate_local_git_files(gitignore_path: Path, gitattributes_path: Path) ->
     """Validates local Git files (.gitattributes and .gitignore) against recommended versions.
 
     Args:
-        git_config_path: The path to the local Git configuration file.
+        gitignore_path: The path to the local .gitignore file.
+        gitattributes_path: The path to the local .gitattributes file.
 
     Returns:
         bool: True if the gitignore file at least contains all the configuration from the recommended file, False otherwise.
+
+    Raises:
+        FileExistsError: If either the .gitignore or .gitattributes file does not exist at the specified paths.
     """
     if not gitignore_path.is_file():
         raise FileExistsError(f"File: {gitignore_path} does not exist!")
