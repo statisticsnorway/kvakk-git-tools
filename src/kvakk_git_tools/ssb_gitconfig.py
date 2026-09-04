@@ -217,14 +217,22 @@ def set_base_config(pl: Platform, test: bool) -> str:
     Returns:
         The recommended .gitattributes
     """
+    dst = Path().home() / ".gitconfig"
+
+    if test:
+        # Use the recommended configs bundled with the installed package instead
+        # of cloning a version tag, which may not exist yet (e.g. before release).
+        config_dir = Path(__file__).resolve().parent / "recommended"
+        src = config_dir / "gitconfig-dapla"
+        dst.write_bytes(src.read_bytes())
+        gitattributes_file = config_dir / "gitattributes"
+        return gitattributes_file.read_text(encoding="utf-8").rstrip()
+
     temp_dir = Path.home() / "temp-ssb-gitconfig"
     config_dir = (
         temp_dir / "kvakk-git-tools" / "src" / "kvakk_git_tools" / "recommended"
     )
-    dst = Path().home() / ".gitconfig"
     src = config_dir / f"gitconfig-{pl.name().value}"
-    if test:
-        src = config_dir / "gitconfig-dapla"
 
     options = ["--branch", f"v{__version__}"]
     prod_zone_windows = pl.name() is PlatformName.PROD_WINDOWS_CITRIX
