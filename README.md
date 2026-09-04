@@ -99,8 +99,13 @@ poetry run ruff check .
 
 ### Bumping version
 
-Just change the version number in `pyproject.toml` to the new version number.
-Or use the command `poetry version` followed by `major`, `minor` or `patch`.
+Use the `bump-my-version` tool with `patch`, `minor` or `major`. Examples:
+
+```shell
+poetry run bump-my-version bump patch  # 2.6.0 -> 2.6.1
+poetry run bump-my-version bump minor  # 2.6.0 -> 2.7.0
+poetry run bump-my-version bump major  # 2.6.0 -> 3.0.0
+```
 
 ### Building and releasing
 
