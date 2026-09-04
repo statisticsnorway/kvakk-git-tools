@@ -9,7 +9,7 @@ If there is an existing .gitconfig file, it is backed up, and the name and email
 address are extracted from it and reused.
 """
 
-__version__ = "2.5.1"
+__version__ = "2.6.0"
 
 import argparse
 import getpass
@@ -218,17 +218,19 @@ def set_base_config(pl: Platform, test: bool) -> str:
         The recommended .gitattributes
     """
     temp_dir = Path.home() / "temp-ssb-gitconfig"
-    config_dir = temp_dir / "kvakk-git-tools" / "kvakk_git_tools" / "recommended"
+    config_dir = (
+        temp_dir / "kvakk-git-tools" / "src" / "kvakk_git_tools" / "recommended"
+    )
     dst = Path().home() / ".gitconfig"
     src = config_dir / f"gitconfig-{pl.name().value}"
     if test:
         src = config_dir / "gitconfig-dapla"
 
-    options = ["--branch", __version__]
+    options = ["--branch", f"v{__version__}"]
     prod_zone_windows = pl.name() is PlatformName.PROD_WINDOWS_CITRIX
     prod_zone_linux = pl.name() is PlatformName.PROD_LINUX
     if prod_zone_windows or prod_zone_linux:
-        options = ["-c", "http.sslVerify=False"]
+        options = ["-c", "http.sslVerify=False", *options]
 
     cmd = [
         "git",
